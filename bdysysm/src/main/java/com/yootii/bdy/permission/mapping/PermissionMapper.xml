@@ -1,0 +1,315 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.yootii.bdy.permission.dao.PermissionMapper" >
+  <resultMap id="BaseResultMap" type="com.yootii.bdy.permission.model.Permission" >
+    <id column="id" property="id" jdbcType="INTEGER" />
+    <result column="permission" property="permission" jdbcType="VARCHAR" />
+    <result column="note" property="note" jdbcType="VARCHAR" />
+    <result column="agencyId" property="agencyId" jdbcType="INTEGER" />
+     <result column="scope" property="description" jdbcType="VARCHAR" />
+     <result column="noedit" property="noedit" jdbcType="INTEGER" />
+  </resultMap>
+  <resultMap id="BaseResultMap1" type="com.yootii.bdy.permission.model.Permission" >
+    <id column="id" property="id" jdbcType="INTEGER" />
+    <result column="permission" property="permission" jdbcType="VARCHAR" />
+    <result column="note" property="note" jdbcType="VARCHAR" />
+    <result column="agencyId" property="agencyId" jdbcType="INTEGER" />
+     <result column="scope" property="scope" jdbcType="VARCHAR" />
+     <result column="noedit" property="noedit" jdbcType="INTEGER" />
+    <collection property="roles" javaType="java.util.List" ofType="com.yootii.bdy.role.model.Role">
+	    <id column="rid" property="id" jdbcType="INTEGER" />
+	    <result column="name" property="name" jdbcType="VARCHAR" />
+	    <result column="description" property="description" jdbcType="VARCHAR" />
+	    <result column="ragencyId" property="agencyId" jdbcType="INTEGER" />
+	    <result column="rscope" property="scope" jdbcType="VARCHAR" />
+	    <result column="rnoedit" property="noedit" jdbcType="INTEGER" />
+    </collection>
+    </resultMap>
+  <sql id="Base_Column_List" >
+    id, permission, note,agencyId,scope,noedit
+  </sql>
+  <sql id="Base_Column_List_p" >
+    p.id, p.permission, p.note,p.agencyId,p.scope,p.noedit
+  </sql>
+   <sql id="Base_Column_List_r" >
+    r.id as rid, r.name, r.description,r.agencyId,r.scope,r.noedit
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select 
+    <include refid="Base_Column_List" />
+    from permission
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
+    delete from permission
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.yootii.bdy.permission.model.Permission" >
+    insert into permission (id, permission, note,agencyId,scope,noedit
+      )
+    values (#{id,jdbcType=INTEGER}, #{permission,jdbcType=VARCHAR}, #{note,jdbcType=VARCHAR},#{agencyId,jdbcType=INTEGER},#{scope,jdbcType=VARCHAR}
+      ,#{noedit,jdbcType=INTEGER})
+  </insert>
+  <insert id="insertSelective" parameterType="com.yootii.bdy.permission.model.Permission" useGeneratedKeys="true" keyProperty="id">
+    insert into permission
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        id,
+      </if>
+      <if test="permission != null" >
+        permission,
+      </if>
+      <if test="note != null" >
+        note,
+      </if>
+       <if test="agencyId != null" >
+        agencyId,
+      </if>
+      <if test="scope != null" >
+        scope,
+      </if>
+      <if test="noedit != null" >
+        noedit,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        #{id,jdbcType=INTEGER},
+      </if>
+      <if test="permission != null" >
+        #{permission,jdbcType=VARCHAR},
+      </if>
+      <if test="note != null" >
+        #{note,jdbcType=VARCHAR},
+      </if>
+      <if test="agencyId != null" >
+        #{agencyId,jdbcType=INTEGER},
+      </if>
+      <if test="scope != null" >
+        #{scope,jdbcType=VARCHAR},
+      </if>
+      <if test="noedit != null" >
+        #{noedit,jdbcType=INTEGER},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.yootii.bdy.permission.model.Permission" >
+    update permission
+    <set >
+      <if test="permission != null" >
+        permission = #{permission,jdbcType=VARCHAR},
+      </if>
+      <if test="note != null" >
+        note = #{note,jdbcType=VARCHAR},
+      </if>
+      <if test="agencyId != null" >
+        agencyId = #{agencyId,jdbcType=INTEGER},
+      </if>
+      <if test="scope != null" >
+        scope = #{scope,jdbcType=VARCHAR},
+      </if>
+      <if test="noedit != null" >
+        noedit = #{noedit,jdbcType=INTEGER},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.yootii.bdy.permission.model.Permission" >
+    update permission
+    set permission = #{permission,jdbcType=VARCHAR},
+      note = #{note,jdbcType=VARCHAR},
+      agencyId = #{agencyId,jdbcType=INTEGER},
+      scope = #{scope,jdbcType=VARCHAR},
+      noedit = #{noedit,jdbcType=INTEGER}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <select id="selectByPermission" resultMap="BaseResultMap1">
+  	  SELECT <include refid="Base_Column_List_p"/>,r.id as rid, r.name, r.description,r.agencyId as ragencyId,r.scope as rscope,r.noedit as rnoedit
+  	  FROM permission p LEFT JOIN role_permission rp ON p.id=rp.permissionId
+      LEFT JOIN role r ON rp.roleId=r.id
+      where 1=1
+      <choose>
+	   		<when test="gcon.keyword!=null and gcon.keyword!=''">
+			<bind name="gcon.keyword" value="'%' + gcon.keyword + '%'" />
+			and (p.permission like #{gcon.keyword,jdbcType=VARCHAR}
+			
+			or p.note like #{gcon.keyword,jdbcType=VARCHAR})
+		
+			</when> 
+			
+		<otherwise>
+			<if test="permission.permission!=null and permission.permission!=''">
+				<bind name="permission.permission" value="'%' + permission.permission + '%'" />
+				and p.permission like #{permission.permission,jdbcType=VARCHAR}
+			</if>
+			<if test="permission.note!=null and permission.note!=''">
+				<bind name="permission.note" value="'%' + permission.note + '%'" />
+				and p.description like #{permission.note,jdbcType=VARCHAR}
+			</if>
+						
+			</otherwise>
+		</choose>
+		<if test="permission.id!=null and permission.id!=''">
+			and p.id = #{permission.id,jdbcType=INTEGER}
+			</if>
+		<if test="permission.agencyId!=null and permission.agencyId!='' and permission.noedit ==null">
+			and p.agencyId = #{permission.agencyId,jdbcType=INTEGER}
+		</if>
+		<if test="permission.agencyId!=null and permission.agencyId!='' and permission.noedit !=null and  permission.noedit !=''">
+			and (p.agencyId = #{permission.agencyId,jdbcType=INTEGER} or p.noedit = #{permission.noedit,jdbcType=INTEGER})
+		</if>
+		<if test="permission.agencyId==null and permission.noedit !=null and  permission.noedit !=''">
+			and  p.noedit = #{permission.noedit,jdbcType=INTEGER}
+		</if>
+		<if test="group!=null and group!=''">
+			GROUP BY ${group}
+		</if>
+		<bind name="gcon.offset" value="gcon.offset" /> 
+		<bind name="gcon.rows" value="gcon.rows" /> 
+		<if test="gcon.rows != null and gcon.offset != null">
+		limit #{gcon.offset,jdbcType=INTEGER}, #{gcon.rows,jdbcType=INTEGER}
+		</if>
+  </select>
+  <select id="selectCountByPermission" resultType="java.lang.Long">
+   SELECT count(p.id) 
+  	  FROM permission p 
+      where 1=1
+      <choose>
+	   		<when test="gcon.keyword!=null and gcon.keyword!=''">
+			<bind name="gcon.keyword" value="'%' + gcon.keyword + '%'" />
+			and (p.permission like #{gcon.keyword,jdbcType=VARCHAR}
+			
+			or p.note like #{gcon.keyword,jdbcType=VARCHAR})
+		
+			</when> 
+			
+		<otherwise>
+			<if test="permission.permission!=null and permission.permission!=''">
+				<bind name="permission.permission" value="'%' + permission.permission + '%'" />
+				and p.permission like #{permission.permission,jdbcType=VARCHAR}
+			</if>
+			<if test="permission.note!=null and permission.note!=''">
+				<bind name="permission.note" value="'%' + permission.note + '%'" />
+				and p.note like #{permission.note,jdbcType=VARCHAR}
+			</if>
+			<if test="permission.agencyId!=null and permission.agencyId!=''">
+			and p.agencyId = #{permission.agencyId,jdbcType=INTEGER}
+			</if>		
+			</otherwise>
+		</choose>
+		<if test="permission.id!=null and permission.id!=''">
+			and p.id = #{permission.id,jdbcType=INTEGER}
+			</if>
+		<if test="permission.agencyId!=null and permission.agencyId!='' and permission.noedit ==null">
+			and p.agencyId = #{permission.agencyId,jdbcType=INTEGER}
+		</if>
+		<if test="permission.agencyId!=null and permission.agencyId!='' and permission.noedit !=null and  permission.noedit !=''">
+			and (p.agencyId = #{permission.agencyId,jdbcType=INTEGER} or p.noedit = #{permission.noedit,jdbcType=INTEGER})
+		</if>
+		<if test="permission.agencyId == null and permission.noedit !=null and  permission.noedit !=''">
+			and  p.noedit = #{permission.noedit,jdbcType=INTEGER}
+		</if>
+  </select>
+  
+  <select id="chenkPermission" resultType="java.lang.Integer">
+      SELECT count(id) FROM permission WHERE permission = #{permission,jdbcType=VARCHAR}
+  </select>
+  <select id="checkPermission" resultType="java.lang.Integer">
+  	SELECT count(id) FROM permission WHERE permission = #{permission.permission,jdbcType=VARCHAR} and agencyId=#{permission.agencyId,jdbcType=INTEGER}
+  	<if test="permission.id!=null and permission.id!=''">
+			and id != #{permission.id,jdbcType=INTEGER}
+		</if>
+  	 
+  </select>
+  <select id="selectPermissionByUserName" parameterType="String" resultMap="BaseResultMap" >
+  	SELECT <include refid="Base_Column_List_p"/>
+  	FROM permission p  JOIN role_permission rp ON p.id=rp.permissionId
+	JOIN role r ON rp.roleId=r.id JOIN user_role ur ON r.id =ur.roleId
+	JOIN USER u ON ur.userId = u.userId
+	where  u.username = #{userName,jdbcType=VARCHAR}
+  </select>
+  <select id="selectPermissionByUserId" parameterType="Integer" resultType="java.lang.String" >
+  	SELECT p.permission
+  	FROM permission p  JOIN role_permission rp ON p.id=rp.permissionId
+	JOIN role r ON rp.roleId=r.id JOIN user_role ur ON r.id =ur.roleId
+	JOIN USER u ON ur.userId = u.userId
+	where  u.userId = #{userId,jdbcType=INTEGER}
+  </select>
+  <select id="selectPermissionListByUserId"	parameterType="Integer" resultMap="BaseResultMap">
+  	SELECT <include refid="Base_Column_List_p"/>
+  	FROM permission p  JOIN role_permission rp ON p.id=rp.permissionId
+	JOIN role r ON rp.roleId=r.id JOIN user_role ur ON r.id =ur.roleId
+	JOIN USER u ON ur.userId = u.userId
+	where  u.userId = #{userId,jdbcType=INTEGER}
+  </select>
+    <select id="selectPermissionByCustomerId" parameterType="Integer" resultType="java.lang.String" >
+  	SELECT p.permission
+  	FROM permission p  JOIN role_permission rp ON p.id=rp.permissionId
+	JOIN role r ON rp.roleId=r.id JOIN customer_role ur ON r.id =ur.roleId
+	JOIN customer u ON ur.customerId = u.id
+	where  u.id = #{customerId,jdbcType=INTEGER}
+  </select>
+ 
+ <select id="selectByPermissionNoOwn" resultMap="BaseResultMap1">
+ SELECT <include refid="Base_Column_List"/> 
+ FROM permission WHERE agencyId= #{permission.agencyId,jdbcType=INTEGER} 
+ <if test="roleId!=null and roleId!=''">
+  AND id NOT IN (SELECT permissionId FROM role_permission 
+ 	WHERE roleId = #{roleId,jdbcType=INTEGER})
+ </if>
+
+ </select>
+  <select id="selectCountByPermissionOwn" resultType="java.lang.Long">
+   SELECT count(p.id) 
+  	  FROM permission p 
+      where 1=1
+     
+		<if test="permission.permission!=null and permission.permission!=''">
+			<bind name="permission.permission" value="permission.permission" />
+			and p.permission = #{permission.permission,jdbcType=VARCHAR}
+		</if>
+		<if test="permission.note!=null and permission.note!=''">
+			<bind name="permission.note" value="'%' + permission.note + '%'" />
+			and p.note like #{permission.note,jdbcType=VARCHAR}
+		</if>
+		<if test="permission.agencyId!=null and permission.agencyId!=''">
+			<bind name="permission.agencyId" value="permission.agencyId" />
+			and p.agencyId = #{permission.agencyId,jdbcType=INTEGER}
+		</if>		
+		
+		<if test="permission.id!=null and permission.id!=''">
+			and p.id = #{permission.id,jdbcType=INTEGER}
+			</if>
+		
+		
+  </select>
+  <select id="selectByPermissionOwn" resultMap="BaseResultMap">
+  	  SELECT <include refid="Base_Column_List_p"/>
+  	  FROM permission p 
+      where 1=1
+     
+		<if test="permission.permission!=null and permission.permission!=''">
+			<bind name="permission.permission" value="permission.permission" />
+			and p.permission = #{permission.permission,jdbcType=VARCHAR}
+		</if>
+		<if test="permission.note!=null and permission.note!=''">
+			<bind name="permission.note" value="'%' + permission.note + '%'" />
+			and p.description like #{permission.note,jdbcType=VARCHAR}
+		</if>
+						
+		
+		<if test="permission.id!=null and permission.id!=''">
+			and p.id = #{permission.id,jdbcType=INTEGER}
+			</if>
+		<if test="permission.agencyId!=null and permission.agencyId!=''">
+			<bind name="permission.agencyId" value="permission.agencyId" />
+			and p.agencyId = #{permission.agencyId,jdbcType=INTEGER}
+		</if>		
+		
+		<if test="permission.id!=null and permission.id!=''">
+			and p.id = #{permission.id,jdbcType=INTEGER}
+			</if>
+		
+		
+  </select>
+</mapper>

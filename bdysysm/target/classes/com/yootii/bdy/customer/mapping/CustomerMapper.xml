@@ -1,0 +1,870 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.yootii.bdy.customer.dao.CustomerMapper" >
+  <resultMap id="BaseResultMap" type="com.yootii.bdy.customer.model.Customer" >
+    <id column="id" property="id" jdbcType="INTEGER" />
+    <result column="name" property="name" jdbcType="VARCHAR" />
+    <result column="country" property="country" jdbcType="VARCHAR" />
+    <result column="address" property="address" jdbcType="VARCHAR" />
+    <result column="level" property="level" jdbcType="INTEGER" />
+    <result column="source" property="source" jdbcType="INTEGER" />
+    <result column="custType" property="custType" jdbcType="INTEGER" />
+    <result column="username" property="username" jdbcType="VARCHAR" />
+    <result column="password" property="password" jdbcType="VARCHAR" />
+    <result column="fullname" property="fullname" jdbcType="VARCHAR" />
+    <result column="email" property="email" jdbcType="VARCHAR" />
+    <result column="emailPass" property="emailPass" jdbcType="VARCHAR" />
+    <result column="phone" property="phone" jdbcType="VARCHAR" />
+    <result column="sex" property="sex" jdbcType="VARCHAR" />
+    <result column="userType" property="userType" jdbcType="INTEGER" />
+    <result column="locked" property="locked" jdbcType="INTEGER" />
+    <result column="validDate" property="validDate" jdbcType="TIMESTAMP" />
+    <result column="validataCode" property="validataCode" jdbcType="CHAR" />
+    <result column="regionId" property="regionId" jdbcType="INTEGER" />
+    <collection property="roles" ofType="com.yootii.bdy.role.model.Role" column="id" select="getRoles"></collection>
+    <collection property="applicants" ofType="com.yootii.bdy.customer.model.Applicant" column="id" select="getApplicants"></collection>
+    <collection property="agencies" ofType="com.yootii.bdy.agency.model.Agency" column="id" select="getAgencies"></collection> 
+  	<collection property="users" javaType="ArrayList" ofType="com.yootii.bdy.user.model.User" column="id" select="getUsers"></collection>
+  </resultMap>
+  
+  
+  
+  <resultMap id="UserResultMap" type="com.yootii.bdy.customer.model.Customer" >
+    <id column="id" property="id" jdbcType="INTEGER" />
+    <result column="name" property="name" jdbcType="VARCHAR" />
+    <result column="country" property="country" jdbcType="VARCHAR" />
+    <result column="address" property="address" jdbcType="VARCHAR" />
+    <result column="level" property="level" jdbcType="INTEGER" />
+    <result column="source" property="source" jdbcType="INTEGER" />
+    <result column="custType" property="custType" jdbcType="INTEGER" />
+    <result column="username" property="username" jdbcType="VARCHAR" />
+    <result column="password" property="password" jdbcType="VARCHAR" />
+    <result column="fullname" property="fullname" jdbcType="VARCHAR" />
+    <result column="email" property="email" jdbcType="VARCHAR" />
+    <result column="emailPass" property="emailPass" jdbcType="VARCHAR" />
+    <result column="phone" property="phone" jdbcType="VARCHAR" />
+    <result column="sex" property="sex" jdbcType="VARCHAR" />
+    <result column="userType" property="userType" jdbcType="INTEGER" />
+    <result column="locked" property="locked" jdbcType="INTEGER" />
+    <result column="validDate" property="validDate" jdbcType="TIMESTAMP" />
+    <result column="validataCode" property="validataCode" jdbcType="CHAR" />
+    <result column="regionId" property="regionId" jdbcType="INTEGER" />
+    <collection property="users" ofType="com.yootii.bdy.user.model.User">  
+	  <id column="userId" property="userId" jdbcType="INTEGER"/>  
+	  <result column="u_username" property="username" jdbcType="VARCHAR"/>  
+	  <result column="u_fullname" property="fullname" jdbcType="VARCHAR"/>  
+	</collection>  
+  </resultMap>
+  <resultMap id="ResultMapWithBLOBs" type="com.yootii.bdy.customer.model.Customer" extends="BaseResultMap" >
+    <result column="userIcon" property="userIcon" jdbcType="LONGVARCHAR" />
+  </resultMap>
+  <resultMap id="SimpleCountResultMap" type="java.util.HashMap">
+    <result column="count" jdbcType="INTEGER" property="count" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    id, name, country, address, level, source, custType, username, password, fullname, email, emailPass,
+    phone, sex, userType, locked, validDate, validataCode, regionId
+  </sql>
+  <sql id="Blob_Column_List" >
+    userIcon
+  </sql>
+  
+  <sql id="Base_Column_List_a" >
+    a.id,  a.name,  a.country, a.address,  a.level,  a.source,  a.custType,  a.username,  a.password,  a.fullname,  a.email, a.emailPass, 
+     a.phone,  a.sex,  a.userType,  a.locked,  a.validDate,  a.validataCode, a.regionId
+  </sql>
+  
+  <sql id="Blob_Column_List_a" >
+     a.userIcon
+  </sql>
+  <sql id="Role_Column_List_b">
+  	 b.id, b.name, b.description, b.agencyId
+  </sql>
+   <sql id="Role_Column_List_app">
+  		app.id, app.applicantName, app.applicantAddress, app.applicantEnName, app.applicantEnAddress, app.usertName, 
+    app.modifyTime
+  </sql>
+  <sql id="Agency_Column_List_a">
+  	a.id, a.name, a.address, a.tel, a.logo, a.status
+  </sql>
+  <sql id="User_Column_List_u">
+  	u.userId,u.username as u_username,u.fullname as u_fullname
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="ResultMapWithBLOBs" parameterType="java.lang.Integer" >
+    select 
+    <include refid="Base_Column_List" />
+    ,
+    <include refid="Blob_Column_List" />
+    from customer
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+  
+  <select id="selectByUsername" resultMap="ResultMapWithBLOBs" parameterType="string" >
+    select 
+    <include refid="Base_Column_List" />
+    ,
+    <include refid="Blob_Column_List" />
+    from customer
+    where username = #{username,jdbcType=VARCHAR}
+  </select>
+  
+  <select id="selectByEmail" resultMap="ResultMapWithBLOBs" parameterType="string" >
+    select 
+    <include refid="Base_Column_List" />
+    ,
+    <include refid="Blob_Column_List" />
+    from customer
+    where email = #{email,jdbcType=VARCHAR}
+  </select>
+  
+  <select id="selectByCompanyName" resultMap="ResultMapWithBLOBs" parameterType="string" >
+    select 
+    <include refid="Base_Column_List" />
+    ,
+    <include refid="Blob_Column_List" />
+    from customer
+    where name = #{name,jdbcType=VARCHAR}
+  </select>
+  <select id="selectAllCustomer" resultMap="ResultMapWithBLOBs" >
+    select 
+    <include refid="Base_Column_List" />
+    ,
+    <include refid="Blob_Column_List" />
+    from customer
+  </select>
+  
+   
+  <select id="selectCustomerRegion" resultMap="ResultMapWithBLOBs">    
+    select distinct(regionId) as regionId, country  from customer a
+    <if test="agencyId!=null">
+	    <bind name="agencyId" value="agencyId" />
+	    left join agency_customer b 
+	    on a.id=b.custId 
+	    where b.agencyId= #{agencyId,jdbcType=INTEGER}
+    </if>    
+  </select>
+  
+  <select id="selectCustomerOwnRegion" resultMap="ResultMapWithBLOBs">
+    select distinct(regionId) as regionId, country
+    from customer a,user_customer b 
+    where a.id=b.custId 
+    <bind name="userId" value="userId" />
+    <if test="level==0">
+    and b.userId in (
+		select d.userId
+		from department a 
+		left join user_department b on a.id = b.departmentId
+		left join department c on a.id = c.parent
+		left join user_department d on c.id = d.departmentId
+		where a.level=0 and b.userId=#{userId,jdbcType=INTEGER} and d.userId is not null 
+		union
+		select a.userId
+		from user_department a
+		left join department b on a.departmentId=b.id
+		left join user_department c on b.id = c.departmentId
+		where c.userId=#{userId,jdbcType=INTEGER} and b.level=0
+	)
+    </if>
+    <if test="level==1">
+    and b.userId in (
+    	select a.userId
+		from user_department a
+		left join department b on a.departmentId=b.id
+		left join user_department c on b.id = c.departmentId
+		where c.userId=#{userId,jdbcType=INTEGER} and b.level=1
+	)
+    </if>
+    <if test="level==null">
+    and b.userId= #{userId,jdbcType=INTEGER}
+    </if>
+  </select>
+  
+  
+  
+  <select id="selectByCustomer" resultMap="ResultMapWithBLOBs">
+    select 
+    <include refid="Base_Column_List_a" />
+    ,
+    <include refid="Blob_Column_List_a" />
+    from customer a
+    <if test="agencyId!=null">
+	    <bind name="agencyId" value="agencyId" />
+	    left join agency_customer b 
+	    on a.id=b.custId 
+	    where b.agencyId= #{agencyId,jdbcType=INTEGER}
+    </if>
+    <if test="agencyId==null">
+    where 1=1 
+    </if>
+    <bind name="customer.regionId" value="customer.regionId" />
+    <if test="customer.regionId!=null and customer.regionId!=987654321">		
+		and a.regionId in 
+		(
+			select regionId from region 
+			where (regionId=#{customer.regionId,jdbcType=INTEGER})
+		)			
+	</if>	
+	<if test="customer.regionId!=null and customer.regionId==987654321">		
+		and a.country!='中国'	
+	</if>
+	<if test="customer.regionId==null and agencyId==null">
+	    and id not in (select a.custId from agency_customer a, agency b where a.agencyId=b.id and b.name='云南万慧达')      
+    </if>
+    <choose>
+			<when test="gcon.keyword!=null and gcon.keyword!=''">
+				<bind name="gcon.keyword" value="'%' + gcon.keyword + '%'" />
+				and (
+				a.name like #{gcon.keyword,jdbcType=VARCHAR} or
+				a.username like #{gcon.keyword,jdbcType=VARCHAR} or
+				a.fullname like #{gcon.keyword,jdbcType=VARCHAR} or
+				a.email like #{gcon.keyword,jdbcType=VARCHAR} or
+				a.phone like #{gcon.keyword,jdbcType=VARCHAR} )
+			</when>
+			<otherwise>
+				<if test="customer.name!=null and customer.name!=''">
+					<bind name="customer.name" value="'%' + customer.name + '%'" />
+					and a.name like #{user.name,jdbcType=VARCHAR}
+				</if>
+				<if test="customer.username!=null and customer.username!=''">
+					<bind name="customer.username" value="'%' + customer.username + '%'" />
+					and a.username like #{user.username,jdbcType=VARCHAR}
+				</if>
+				<if test="customer.fullname!=null and customer.fullname!=''">
+					<bind name="customer.fullname" value="'%'+customer.fullname+'%'" />
+					and a.fullname like #{customer.fullname,jdbcType=VARCHAR}
+				</if>
+				<if test="customer.email!=null and customer.email!=''">
+					<bind name="user.fullname" value="customer.email" />
+					and a.email = #{customer.email,jdbcType=VARCHAR}
+				</if>
+				<if test="customer.phone!=null and customer.phone!=''">
+					<bind name="customer.phone" value="customer.phone" />
+					and a.phone = #{customer.phone,jdbcType=VARCHAR}
+				</if>
+			</otherwise>
+		</choose>
+		ORDER BY a.username
+		<bind name="gcon.offset" value="gcon.offset" />
+		<bind name="gcon.rows" value="gcon.rows" />
+		limit #{gcon.offset,jdbcType=INTEGER}, #{gcon.rows,jdbcType=INTEGER}
+  </select>
+  
+  
+  <select id="selectCustUserByAgencyId" resultMap="UserResultMap" >
+    select  
+    <include refid="Base_Column_List_a" />
+    ,
+    <include refid="User_Column_List_u" /> 
+    from
+	(select a.* from (select custId 
+	  from trademark_case
+	where agencyId = #{agencyId,jdbcType=INTEGER}
+      group by custId
+    UNION
+    select custId 
+      from agency_customer
+    where agencyId = #{agencyId,jdbcType=INTEGER}
+    group by custId) m,customer a
+    where a.id=m.custId
+    <bind name="gcon.offset" value="gcon.offset" />
+	<bind name="gcon.rows" value="gcon.rows" />
+	limit #{gcon.offset,jdbcType=INTEGER}, #{gcon.rows,jdbcType=INTEGER}   
+    ) a
+      left join  user_customer uc 
+      on a.id=uc.custId
+      left join  (select u.* 
+        from user u,agency_user au 
+        where u.userId=au.userId and au.agencyId= #{agencyId,jdbcType=INTEGER}) u 
+      on u.userId=uc.userId
+  </select>
+  
+  
+   <select id="selectCustUserCountByAgencyId" resultType="java.lang.Long">
+    select count(a.id) as count
+    from
+	(select custId 
+	  from trademark_case
+	where agencyId = #{agencyId,jdbcType=INTEGER}
+      group by custId
+    UNION
+    select custId 
+      from agency_customer
+    where agencyId = #{agencyId,jdbcType=INTEGER}
+    group by custId) m
+      left join  user_customer uc on m.custId=uc.custId
+      left join  (select u.* 
+        from user u,agency_user au 
+        where u.userId=au.userId and au.agencyId= #{agencyId,jdbcType=INTEGER}) u on u.userId=uc.userId,customer a
+    where m.custId=a.id
+  </select>
+  <select id="selectByCustomerCount" resultMap="SimpleCountResultMap" >
+    select count(*) as count
+    from customer a
+    <if test="agencyId!=null">
+	    <bind name="agencyId" value="agencyId" />	    
+	    left join agency_customer b  on a.id=b.custId 
+	    where b.agencyId= #{agencyId,jdbcType=INTEGER}
+    </if>
+    <if test="agencyId==null">
+    where 1=1 
+    </if>
+    <if test="customer.regionId!=null and customer.regionId!=987654321">		
+		and a.regionId in 
+		(
+			select regionId from region 
+			where (regionId=#{customer.regionId,jdbcType=INTEGER})
+		)			
+	</if>	
+	<if test="customer.regionId!=null and customer.regionId==987654321">		
+		and a.country!='中国'	
+	</if>	
+	<if test="customer.regionId==null and agencyId==null">
+	    and id not in (select a.custId from agency_customer a, agency b where a.agencyId=b.id and b.name='云南万慧达')      
+    </if>
+    <choose>
+			<when test="gcon.keyword!=null and gcon.keyword!=''">
+				<bind name="gcon.keyword" value="'%' + gcon.keyword + '%'" />
+				and (
+				a.name like #{gcon.keyword,jdbcType=VARCHAR} or
+				a.username like #{gcon.keyword,jdbcType=VARCHAR} or
+				a.fullname like #{gcon.keyword,jdbcType=VARCHAR} or
+				a.email like #{gcon.keyword,jdbcType=VARCHAR} or
+				a.phone like #{gcon.keyword,jdbcType=VARCHAR} )
+			</when>
+			<otherwise>
+				<if test="customer.name!=null and customer.name!=''">
+					<bind name="customer.name" value="'%' + customer.name + '%'" />
+					and a.name like #{user.name,jdbcType=VARCHAR}
+				</if>
+				<if test="customer.username!=null and customer.username!=''">
+					<bind name="customer.username" value="'%' + customer.username + '%'" />
+					and a.username like #{user.username,jdbcType=VARCHAR}
+				</if>
+				<if test="customer.fullname!=null and customer.fullname!=''">
+					<bind name="customer.fullname" value="'%'+customer.fullname+'%'" />
+					and a.fullname like #{customer.fullname,jdbcType=VARCHAR}
+				</if>
+				<if test="customer.email!=null and customer.email!=''">
+					<bind name="user.fullname" value="customer.email" />
+					and a.email = #{customer.email,jdbcType=VARCHAR}
+				</if>
+				<if test="customer.phone!=null and customer.phone!=''">
+					<bind name="customer.phone" value="customer.phone" />
+					and a.phone = #{customer.phone,jdbcType=VARCHAR}
+				</if>
+			</otherwise>
+		</choose>
+  </select>
+  <select id="selectByOwnCustomer" resultMap="ResultMapWithBLOBs">
+    select distinct
+    <include refid="Base_Column_List_a" />
+    ,
+    <include refid="Blob_Column_List_a" />
+    from customer a,user_customer b 
+    where a.id=b.custId 
+    <bind name="userId" value="userId" />
+    <if test="level==0">
+    and b.userId in (
+		select d.userId
+		from department a 
+		left join user_department b on a.id = b.departmentId
+		left join department c on a.id = c.parent
+		left join user_department d on c.id = d.departmentId
+		where a.level=0 and b.userId=#{userId,jdbcType=INTEGER} and d.userId is not null 
+		union
+		select a.userId
+		from user_department a
+		left join department b on a.departmentId=b.id
+		left join user_department c on b.id = c.departmentId
+		where c.userId=#{userId,jdbcType=INTEGER} and b.level=0
+	)
+    </if>
+    <if test="level==1">
+    and b.userId in (
+    	select a.userId
+		from user_department a
+		left join department b on a.departmentId=b.id
+		left join user_department c on b.id = c.departmentId
+		where c.userId=#{userId,jdbcType=INTEGER} and b.level=1
+	)
+    </if>
+    <if test="level==null">
+    and b.userId= #{userId,jdbcType=INTEGER}
+    </if>    
+	<if test="customer.regionId!=null and customer.regionId!=987654321">		
+		and a.regionId in 
+		(
+			select regionId from region 
+			where (regionId=#{customer.regionId,jdbcType=INTEGER})
+		)			
+	</if>	
+	<if test="customer.regionId!=null and customer.regionId==987654321">		
+		and a.country!='中国'	
+	</if>		
+    <choose>
+			<when test="gcon.keyword!=null and gcon.keyword!=''">
+				<bind name="gcon.keyword" value="'%' + gcon.keyword + '%'" />
+				and (
+				a.name like #{gcon.keyword,jdbcType=VARCHAR} or
+				a.username like #{gcon.keyword,jdbcType=VARCHAR} or
+				a.fullname like #{gcon.keyword,jdbcType=VARCHAR} or
+				a.email like #{gcon.keyword,jdbcType=VARCHAR} or
+				a.phone like #{gcon.keyword,jdbcType=VARCHAR} )
+			</when>
+			<otherwise>
+				<if test="customer.name!=null and customer.name!=''">
+					<bind name="customer.name" value="'%' + customer.name + '%'" />
+					and a.name like #{user.name,jdbcType=VARCHAR}
+				</if>
+				<if test="customer.username!=null and customer.username!=''">
+					<bind name="customer.username" value="'%' + customer.username + '%'" />
+					and a.username like #{user.username,jdbcType=VARCHAR}
+				</if>
+				<if test="customer.fullname!=null and customer.fullname!=''">
+					<bind name="customer.fullname" value="'%'+customer.fullname+'%'" />
+					and a.fullname like #{customer.fullname,jdbcType=VARCHAR}
+				</if>
+				<if test="customer.email!=null and customer.email!=''">
+					<bind name="user.fullname" value="customer.email" />
+					and a.email = #{customer.email,jdbcType=VARCHAR}
+				</if>
+				<if test="customer.phone!=null and customer.phone!=''">
+					<bind name="customer.phone" value="customer.phone" />
+					and a.phone = #{customer.phone,jdbcType=VARCHAR}
+				</if>
+			</otherwise>
+		</choose>
+		<if test="gcon.orderCol != null and gcon.orderAsc!=null">
+			<bind name="gcon.orderCol" value="gcon.orderCol" />
+			<bind name="gcon.orderAsc" value="gcon.orderAsc" />
+			order by ${gcon.orderCol} ${gcon.orderAsc}				
+		</if>
+		<bind name="gcon.offset" value="gcon.offset" />
+		<bind name="gcon.rows" value="gcon.rows" />
+		limit #{gcon.offset,jdbcType=INTEGER}, #{gcon.rows,jdbcType=INTEGER}
+  </select>
+  <select id="selectByOwnCustomerCount" resultMap="SimpleCountResultMap">
+    select count(*) as count 
+    from (
+    select distinct <include refid="Base_Column_List_a" />
+    ,
+    <include refid="Blob_Column_List_a" />
+    from customer a,user_customer b 
+    where a.id=b.custId 
+    <bind name="userId" value="userId" />
+    <if test="level==0">
+    and b.userId in (
+		select d.userId
+		from department a 
+		left join user_department b on a.id = b.departmentId
+		left join department c on a.id = c.parent
+		left join user_department d on c.id = d.departmentId
+		where a.level=0 and b.userId=#{userId,jdbcType=INTEGER} and d.userId is not null 
+		union
+		select a.userId
+		from user_department a
+		left join department b on a.departmentId=b.id
+		left join user_department c on b.id = c.departmentId
+		where c.userId=#{userId,jdbcType=INTEGER} and b.level=0
+	)
+    </if>
+    <if test="level==1">
+    and b.userId in (
+    	select a.userId
+		from user_department a
+		left join department b on a.departmentId=b.id
+		left join user_department c on b.id = c.departmentId
+		where c.userId=#{userId,jdbcType=INTEGER} and b.level=1
+	)
+    </if>
+    <if test="level==null">
+    and b.userId= #{userId,jdbcType=INTEGER}
+    </if>
+    <if test="customer.regionId!=null and customer.regionId!=987654321">		
+		and a.regionId in 
+		(
+			select regionId from region 
+			where (regionId=#{customer.regionId,jdbcType=INTEGER})
+		)			
+	</if>	
+	<if test="customer.regionId!=null and customer.regionId==987654321">		
+		and a.country!='中国'	
+	</if>	
+    <choose>
+			<when test="gcon.keyword!=null and gcon.keyword!=''">
+				<bind name="gcon.keyword" value="'%' + gcon.keyword + '%'" />
+				and (
+				a.name like #{gcon.keyword,jdbcType=VARCHAR} or
+				a.username like #{gcon.keyword,jdbcType=VARCHAR} or
+				a.fullname like #{gcon.keyword,jdbcType=VARCHAR} or
+				a.email like #{gcon.keyword,jdbcType=VARCHAR} or
+				a.phone like #{gcon.keyword,jdbcType=VARCHAR} )
+			</when>
+			<otherwise>
+				<if test="customer.name!=null and customer.name!=''">
+					<bind name="customer.name" value="'%' + customer.name + '%'" />
+					and a.name like #{user.name,jdbcType=VARCHAR}
+				</if>
+				<if test="customer.username!=null and customer.username!=''">
+					<bind name="customer.username" value="'%' + customer.username + '%'" />
+					and a.username like #{user.username,jdbcType=VARCHAR}
+				</if>
+				<if test="customer.fullname!=null and customer.fullname!=''">
+					<bind name="customer.fullname" value="'%'+customer.fullname+'%'" />
+					and a.fullname like #{customer.fullname,jdbcType=VARCHAR}
+				</if>
+				<if test="customer.email!=null and customer.email!=''">
+					<bind name="user.fullname" value="customer.email" />
+					and a.email = #{customer.email,jdbcType=VARCHAR}
+				</if>
+				<if test="customer.phone!=null and customer.phone!=''">
+					<bind name="customer.phone" value="customer.phone" />
+					and a.phone = #{customer.phone,jdbcType=VARCHAR}
+				</if>
+			</otherwise>
+		</choose>
+		) t 
+  </select>
+  
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
+    delete from customer
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.yootii.bdy.customer.model.Customer" >
+    insert into customer (id, name, country, address, 
+      level, source, custType, 
+      username, password, fullname, 
+      email, emailPass, phone, sex, 
+      userType, locked, validDate, 
+      validataCode, userIcon, regionId)
+    values (#{id,jdbcType=INTEGER}, #{name,jdbcType=VARCHAR}, #{country,jdbcType=VARCHAR}, #{address,jdbcType=VARCHAR},
+      #{level,jdbcType=INTEGER}, #{source,jdbcType=INTEGER}, #{custType,jdbcType=INTEGER}, 
+      #{username,jdbcType=VARCHAR}, #{password,jdbcType=VARCHAR}, #{fullname,jdbcType=VARCHAR}, 
+      #{email,jdbcType=VARCHAR}, #{emailPass,jdbcType=VARCHAR},#{phone,jdbcType=VARCHAR}, #{sex,jdbcType=VARCHAR}, 
+      #{userType,jdbcType=INTEGER}, #{locked,jdbcType=INTEGER}, #{validDate,jdbcType=TIMESTAMP}, 
+      #{validataCode,jdbcType=CHAR}, #{userIcon,jdbcType=LONGVARCHAR}, #{regionId,jdbcType=INTEGER})
+  </insert>
+  <insert id="insertSelective" parameterType="com.yootii.bdy.customer.model.Customer" useGeneratedKeys="true" keyProperty="id">
+    insert into customer
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        id,
+      </if>
+      <if test="name != null" >
+        name,
+      </if>
+      <if test="country != null" >
+        country,
+      </if>
+      <if test="address != null" >
+        address,
+      </if>
+      <if test="level != null" >
+        level,
+      </if>
+      <if test="source != null" >
+        source,
+      </if>
+      <if test="custType != null" >
+        custType,
+      </if>
+      <if test="username != null" >
+        username,
+      </if>
+      <if test="password != null" >
+        password,
+      </if>
+      <if test="fullname != null" >
+        fullname,
+      </if>
+      <if test="email != null" >
+        email,
+      </if>
+      <if test="emailPass != null" >
+        emailPass,
+      </if>
+      <if test="phone != null" >
+        phone,
+      </if>
+      <if test="sex != null" >
+        sex,
+      </if>
+      <if test="userType != null" >
+        userType,
+      </if>
+      <if test="locked != null" >
+        locked,
+      </if>
+      <if test="validDate != null" >
+        validDate,
+      </if>
+      <if test="validataCode != null" >
+        validataCode,
+      </if>
+      <if test="userIcon != null" >
+        userIcon,
+      </if>
+      <if test="regionId != null" >
+        regionId,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        #{id,jdbcType=INTEGER},
+      </if>
+      <if test="name != null" >
+        #{name,jdbcType=VARCHAR},
+      </if>
+      <if test="country != null" >
+        #{country,jdbcType=VARCHAR},
+      </if>
+      <if test="address != null" >
+        #{address,jdbcType=VARCHAR},
+      </if>
+      <if test="level != null" >
+        #{level,jdbcType=INTEGER},
+      </if>
+      <if test="source != null" >
+        #{source,jdbcType=INTEGER},
+      </if>
+      <if test="custType != null" >
+        #{custType,jdbcType=INTEGER},
+      </if>
+      <if test="username != null" >
+        #{username,jdbcType=VARCHAR},
+      </if>
+      <if test="password != null" >
+        #{password,jdbcType=VARCHAR},
+      </if>
+      <if test="fullname != null" >
+        #{fullname,jdbcType=VARCHAR},
+      </if>
+      <if test="email != null" >
+        #{email,jdbcType=VARCHAR},
+      </if>
+       <if test="emailPass != null" >
+        #{emailPass,jdbcType=VARCHAR},
+      </if>
+      <if test="phone != null" >
+        #{phone,jdbcType=VARCHAR},
+      </if>
+      <if test="sex != null" >
+        #{sex,jdbcType=VARCHAR},
+      </if>
+      <if test="userType != null" >
+        #{userType,jdbcType=INTEGER},
+      </if>
+      <if test="locked != null" >
+        #{locked,jdbcType=INTEGER},
+      </if>
+      <if test="validDate != null" >
+        #{validDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="validataCode != null" >
+        #{validataCode,jdbcType=CHAR},
+      </if>
+      <if test="userIcon != null" >
+        #{userIcon,jdbcType=LONGVARCHAR},
+      </if>
+      <if test="regionId != null" >
+        #{regionId,jdbcType=INTEGER},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.yootii.bdy.customer.model.Customer" >
+    update customer
+    <set >
+      <if test="name != null" >
+        name = #{name,jdbcType=VARCHAR},
+      </if>
+      <if test="country != null" >
+        country = #{country,jdbcType=VARCHAR},
+      </if>
+      <if test="address != null" >
+        address = #{address,jdbcType=VARCHAR},
+      </if>
+      <if test="level != null" >
+        level = #{level,jdbcType=INTEGER},
+      </if>
+      <if test="source != null" >
+        source = #{source,jdbcType=INTEGER},
+      </if>
+      <if test="custType != null" >
+        custType = #{custType,jdbcType=INTEGER},
+      </if>
+      <if test="username != null" >
+        username = #{username,jdbcType=VARCHAR},
+      </if>
+      <if test="password != null" >
+        password = #{password,jdbcType=VARCHAR},
+      </if>
+      <if test="fullname != null" >
+        fullname = #{fullname,jdbcType=VARCHAR},
+      </if>
+      <if test="email != null" >
+        email = #{email,jdbcType=VARCHAR},
+      </if>
+      <if test="emailPass != null" >
+        emailPass = #{emailPass,jdbcType=VARCHAR},
+      </if>
+      <if test="phone != null" >
+        phone = #{phone,jdbcType=VARCHAR},
+      </if>
+      <if test="sex != null" >
+        sex = #{sex,jdbcType=VARCHAR},
+      </if>
+      <if test="userType != null" >
+        userType = #{userType,jdbcType=INTEGER},
+      </if>
+      <if test="locked != null" >
+        locked = #{locked,jdbcType=INTEGER},
+      </if>
+      <if test="validDate != null" >
+        validDate = #{validDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="validataCode != null" >
+        validataCode = #{validataCode,jdbcType=CHAR},
+      </if>
+      <if test="userIcon != null" >
+        userIcon = #{userIcon,jdbcType=LONGVARCHAR},
+      </if>
+      <if test="regionId != null" >
+        regionId = #{regionId,jdbcType=INTEGER},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKeyWithBLOBs" parameterType="com.yootii.bdy.customer.model.Customer" >
+    update customer
+    set name = #{name,jdbcType=VARCHAR},
+      country = #{country,jdbcType=VARCHAR},
+      address = #{address,jdbcType=VARCHAR},
+      level = #{level,jdbcType=INTEGER},
+      source = #{source,jdbcType=INTEGER},
+      custType = #{custType,jdbcType=INTEGER},
+      username = #{username,jdbcType=VARCHAR},
+      password = #{password,jdbcType=VARCHAR},
+      fullname = #{fullname,jdbcType=VARCHAR},
+      email = #{email,jdbcType=VARCHAR},
+      emailPass = #{emailPass,jdbcType=VARCHAR},
+      phone = #{phone,jdbcType=VARCHAR},
+      sex = #{sex,jdbcType=VARCHAR},
+      userType = #{userType,jdbcType=INTEGER},
+      locked = #{locked,jdbcType=INTEGER},
+      validDate = #{validDate,jdbcType=TIMESTAMP},
+      validataCode = #{validataCode,jdbcType=CHAR},
+      userIcon = #{userIcon,jdbcType=LONGVARCHAR},
+      regionId = #{regionId,jdbcType=INTEGER}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.yootii.bdy.customer.model.Customer" >
+		update customer
+		set name = #{name,jdbcType=VARCHAR},
+		country = #{country,jdbcType=VARCHAR},
+		address = #{address,jdbcType=VARCHAR},
+		level = #{level,jdbcType=INTEGER},
+		source = #{source,jdbcType=INTEGER},
+		custType = #{custType,jdbcType=INTEGER},
+		username = #{username,jdbcType=VARCHAR},
+		password = #{password,jdbcType=VARCHAR},
+		fullname = #{fullname,jdbcType=VARCHAR},
+		email = #{email,jdbcType=VARCHAR},
+		emailPass = #{emailPass,jdbcType=VARCHAR},
+		phone = #{phone,jdbcType=VARCHAR},
+		sex = #{sex,jdbcType=VARCHAR},
+		userType = #{userType,jdbcType=INTEGER},
+		locked = #{locked,jdbcType=INTEGER},
+		validDate = #{validDate,jdbcType=TIMESTAMP},
+		validataCode = #{validataCode,jdbcType=CHAR},
+		regionId = #{regionId,jdbcType=INTEGER}
+		where id = #{id,jdbcType=INTEGER}
+  </update>
+  
+  <insert id="bindAgency">
+    insert into agency_customer (agencyId,custId)
+    values (#{agencyId,jdbcType=INTEGER}, #{custId,jdbcType=INTEGER})
+  </insert>
+  
+  <delete id="unbindAgency">
+    delete from agency_customer 
+    where agencyId = #{agencyId,jdbcType=INTEGER} and custId = #{custId,jdbcType=INTEGER}
+  </delete>
+  <delete id="unbindAllAgency">
+    delete from agency_customer 
+    where custId = #{custId,jdbcType=INTEGER}
+  </delete> 
+  <insert id="bindRole">
+    insert into customer_role (roleId,customerId)
+    values (#{roleId,jdbcType=INTEGER}, #{customerId,jdbcType=INTEGER})
+  </insert>
+  <delete id="unbindRole">
+    delete from customer_role 
+    where roleId = #{roleId,jdbcType=INTEGER} and customerId = #{customerId,jdbcType=INTEGER}
+  </delete>
+  <delete id="unbindAllRole">
+    delete from customer_role 
+    where customerId = #{custId,jdbcType=INTEGER}
+  </delete>
+  <delete id="unbindAllUser">
+    delete from user_customer
+    where custId = #{custId,jdbcType=INTEGER}
+  </delete>
+  <select id="getRoles" parameterType="int"
+	resultType="com.yootii.bdy.role.model.Role">
+	SELECT
+	<include refid="Role_Column_List_b" />
+	FROM customer_role a, role b WHERE a.customerId=#{id} and
+	a.roleId=b.id
+  </select>
+   <select id="getApplicants" parameterType="int"
+	resultType="com.yootii.bdy.customer.model.Applicant">
+	SELECT
+	<include refid="Role_Column_List_app" />
+	FROM applicant AS app ,customer_applicant AS cp ,customer AS c
+	WHERE app.id = cp.appId AND c.id = cp.custId AND c.id = #{id}
+  </select>
+  <select id="getAgencies" parameterType="int"
+	resultType="com.yootii.bdy.agency.model.Agency">
+	select 
+	<include refid="Agency_Column_List_a" />, d.fullname as contactName, d.phone as contactTel
+	from 
+	(
+	select a.id, a.name, a.address, a.tel, a.logo, a.status 
+	from agency a, agency_customer b 
+	where a.id=b.agencyId and b.custId = #{id,jdbcType=INTEGER}
+	) a
+	left join agency_contact c on a.id=c.agencyId and c.custId=#{id,jdbcType=INTEGER}
+	left join user d on c.userId=d.userId
+  </select>
+  <select id="getUsers" parameterType="int" resultType="com.yootii.bdy.user.model.User">
+  	select u.userId,u.username,u.fullname
+  	from customer a LEFT JOIN user_customer c
+	    ON a.id = c.custId LEFT JOIN `user` u
+		ON c.userId = u.userId 
+	where a.id=#{id}	
+  	
+  </select>
+  
+  
+  <select id="selectCustomerByPermission" resultMap="ResultMapWithBLOBs">
+  select <include refid="Base_Column_List_a" />
+    ,
+    <include refid="Blob_Column_List_a" />
+     FROM permission p ,role_permission rp,role r,customer a,customer_role ur 
+	WHERE 1=1 AND p.id = rp.permissionId AND rp.roleId = r.id AND r.id = ur.roleId AND ur.customerId = a.id
+	AND p.permission =	#{permission.permission,jdbcType=VARCHAR} AND p.agencyId = #{permission.agencyId,jdbcType=INTEGER}
+	<if test="gcon.offset!=null and gcon.offset!='' and gcon.rows!=null and gcon.rows!=''">
+		<bind name="gcon.offset" value="gcon.offset" />
+		<bind name="gcon.rows" value="gcon.rows" />
+		limit #{gcon.offset,jdbcType=INTEGER}, #{gcon.rows,jdbcType=INTEGER}
+	</if>
+	
+  </select>
+   <select id="selectCustomerByPermissionCount" resultType="java.lang.Long">
+  	select count(a.id)
+      FROM permission p ,role_permission rp,role r,customer a,customer_role ur 
+	WHERE 1=1 AND p.id = rp.permissionId AND rp.roleId = r.id AND r.id = ur.roleId AND ur.customerId = a.id
+	AND p.permission =	#{permission.permission,jdbcType=VARCHAR} AND p.agencyId = #{permission.agencyId,jdbcType=INTEGER}
+	
+  </select>
+</mapper>

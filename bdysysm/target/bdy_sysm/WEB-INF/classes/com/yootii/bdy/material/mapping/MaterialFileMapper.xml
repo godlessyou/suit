@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.yootii.bdy.material.dao.MaterialFileMapper" >
+  <resultMap id="BaseResultMap" type="com.yootii.bdy.material.model.MaterialFile" >
+    <id column="fileId" property="fileId" jdbcType="INTEGER" />
+    <result column="materialId" property="materialId" jdbcType="INTEGER" />
+    <result column="fileName" property="fileName" jdbcType="VARCHAR" />
+    <result column="fileUrl" property="fileUrl" jdbcType="VARCHAR" />
+    <result column="userName" property="userName" jdbcType="VARCHAR" />
+    <result column="modifyTime" property="modifyTime" jdbcType="TIMESTAMP" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    fileId, materialId, fileName, fileUrl, userName, modifyTime
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select 
+    <include refid="Base_Column_List" />
+    from material_file
+    where fileId = #{fileId,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
+    delete from material_file
+    where fileId = #{fileId,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.yootii.bdy.material.model.MaterialFile" >
+    insert into material_file (fileId, materialId, fileName, 
+      fileUrl, userName, modifyTime
+      )
+    values (#{fileId,jdbcType=INTEGER}, #{materialId,jdbcType=INTEGER}, #{fileName,jdbcType=VARCHAR}, 
+      #{fileUrl,jdbcType=VARCHAR}, #{userName,jdbcType=VARCHAR}, #{modifyTime,jdbcType=TIMESTAMP}
+      )
+  </insert>
+  <insert id="insertSelective" parameterType="com.yootii.bdy.material.model.MaterialFile" useGeneratedKeys="true" keyProperty="fileId">
+    insert into material_file
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="fileId != null" >
+        fileId,
+      </if>
+      <if test="materialId != null" >
+        materialId,
+      </if>
+      <if test="fileName != null" >
+        fileName,
+      </if>
+      <if test="fileUrl != null" >
+        fileUrl,
+      </if>
+      <if test="userName != null" >
+        userName,
+      </if>
+      <if test="modifyTime != null" >
+        modifyTime,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="fileId != null" >
+        #{fileId,jdbcType=INTEGER},
+      </if>
+      <if test="materialId != null" >
+        #{materialId,jdbcType=INTEGER},
+      </if>
+      <if test="fileName != null" >
+        #{fileName,jdbcType=VARCHAR},
+      </if>
+      <if test="fileUrl != null" >
+        #{fileUrl,jdbcType=VARCHAR},
+      </if>
+      <if test="userName != null" >
+        #{userName,jdbcType=VARCHAR},
+      </if>
+      <if test="modifyTime != null" >
+        #{modifyTime,jdbcType=TIMESTAMP},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.yootii.bdy.material.model.MaterialFile" >
+    update material_file
+    <set >
+      <if test="materialId != null" >
+        materialId = #{materialId,jdbcType=INTEGER},
+      </if>
+      <if test="fileName != null" >
+        fileName = #{fileName,jdbcType=VARCHAR},
+      </if>
+      <if test="fileUrl != null" >
+        fileUrl = #{fileUrl,jdbcType=VARCHAR},
+      </if>
+      <if test="userName != null" >
+        userName = #{userName,jdbcType=VARCHAR},
+      </if>
+      <if test="modifyTime != null" >
+        modifyTime = #{modifyTime,jdbcType=TIMESTAMP},
+      </if>
+    </set>
+    where fileId = #{fileId,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.yootii.bdy.material.model.MaterialFile" >
+    update material_file
+    set materialId = #{materialId,jdbcType=INTEGER},
+      fileName = #{fileName,jdbcType=VARCHAR},
+      fileUrl = #{fileUrl,jdbcType=VARCHAR},
+      userName = #{userName,jdbcType=VARCHAR},
+      modifyTime = #{modifyTime,jdbcType=TIMESTAMP}
+    where fileId = #{fileId,jdbcType=INTEGER}
+  </update>
+</mapper>

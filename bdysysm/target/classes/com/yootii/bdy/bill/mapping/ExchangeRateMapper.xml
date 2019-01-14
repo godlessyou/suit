@@ -1,0 +1,190 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yootii.bdy.bill.dao.ExchangeRateMapper">
+  <resultMap id="BaseResultMap" type="com.yootii.bdy.bill.model.ExchangeRate">
+    <id column="id" jdbcType="INTEGER" property="id" />
+    <result column="currency1" jdbcType="VARCHAR" property="currency1" />
+    <result column="currency2" jdbcType="VARCHAR" property="currency2" />
+    <result column="value" jdbcType="DECIMAL" property="value" />
+    <result column="updateTime" jdbcType="TIMESTAMP" property="updateTime" />
+    <result column="currCode" jdbcType="VARCHAR" property="currCode" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    id, currency1, currency2, value, updateTime, currCode
+  </sql>
+  <sql id="Base_Column_List_e">
+    e.id, e.currency1, e.currency2, e.value, e.updateTime ,e.currCode
+  </sql>
+  <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from exchange_rate
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+    delete from exchange_rate
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.yootii.bdy.bill.model.ExchangeRate">
+    insert into exchange_rate (id, currency1, currency2, 
+      value, updateTime, currCode)
+    values (#{id,jdbcType=INTEGER}, #{currency1,jdbcType=VARCHAR}, #{currency2,jdbcType=VARCHAR}, 
+      #{value,jdbcType=DECIMAL}, #{updateTime,jdbcType=TIMESTAMP}, #{currCode,jdbcType=VARCHAR})
+  </insert>
+  <insert id="insertSelective" parameterType="com.yootii.bdy.bill.model.ExchangeRate" useGeneratedKeys="true" keyProperty="id">
+    insert into exchange_rate
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        id,
+      </if>
+      <if test="currency1 != null">
+        currency1,
+      </if>
+      <if test="currency2 != null">
+        currency2,
+      </if>
+      <if test="value != null">
+        value,
+      </if>
+      <if test="updateTime != null">
+        updateTime,
+      </if>
+      <if test="currCode != null">
+        currCode,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        #{id,jdbcType=INTEGER},
+      </if>
+      <if test="currency1 != null">
+        #{currency1,jdbcType=VARCHAR},
+      </if>
+      <if test="currency2 != null">
+        #{currency2,jdbcType=VARCHAR},
+      </if>
+      <if test="value != null">
+        #{value,jdbcType=DECIMAL},
+      </if>
+      <if test="updateTime != null">
+        #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="currCode != null">
+        #{currCode,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.yootii.bdy.bill.model.ExchangeRate">
+    update exchange_rate
+    <set>
+      <if test="currency1 != null">
+        currency1 = #{currency1,jdbcType=VARCHAR},
+      </if>
+      <if test="currency2 != null">
+        currency2 = #{currency2,jdbcType=VARCHAR},
+      </if>
+      <if test="value != null">
+        value = #{value,jdbcType=DECIMAL},
+      </if>
+      <if test="updateTime != null">
+        updateTime = #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="currCode != null">
+        currCode = #{currCode,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.yootii.bdy.bill.model.ExchangeRate">
+    update exchange_rate
+    set currency1 = #{currency1,jdbcType=VARCHAR},
+      currency2 = #{currency2,jdbcType=VARCHAR},
+      value = #{value,jdbcType=DECIMAL},
+      currCode = #{currCode,jdbcType=VARCHAR},
+      updateTime = #{updateTime,jdbcType=TIMESTAMP}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <select id="selectByExchangeRate" resultMap="BaseResultMap">
+  select <include refid="Base_Column_List_e"/> 
+  from exchange_rate as e
+  where 1=1 
+  <choose>
+  	<when test="gcon.keyword!=null and gcon.keyword!=''">
+			<bind name="gcon.keyword" value="'%' + gcon.keyword + '%'" />
+			and (e.currency1 like #{gcon.keyword,jdbcType=VARCHAR}
+			
+			or e.currency2 like #{gcon.keyword,jdbcType=VARCHAR}
+			or e.currCode like #{gcon.keyword,jdbcType=VARCHAR})
+	</when> 
+  	<otherwise>
+  		<if test="exchangeRate.currency1!=null and exchangeRate.currency1!=''">
+				<bind name="exchangeRate.currency1" value="'%' + exchangeRate.currency1 + '%'" />
+				and e.currency1 like #{exchangeRate.currency1,jdbcType=VARCHAR}
+		</if>
+		<if test="exchangeRate.currency2!=null and exchangeRate.currency2!=''">
+				<bind name="exchangeRate.currency2" value="'%' + exchangeRate.currency2 + '%'" />
+				and e.currency2 like #{exchangeRate.currency2,jdbcType=VARCHAR}
+		</if>
+		<if test="exchangeRate.currCode!=null and exchangeRate.currCode!=''">
+				<bind name="exchangeRate.currCode" value="'%' + exchangeRate.currCode + '%'" />
+				and e.currCode like #{exchangeRate.currCode,jdbcType=VARCHAR}
+		</if>
+  	</otherwise>
+  		
+  	</choose>
+  		<bind name="gcon.offset" value="gcon.offset" /> 
+		<bind name="gcon.rows" value="gcon.rows" /> 
+		<if test="gcon.rows != null and gcon.offset != null">
+		limit #{gcon.offset,jdbcType=INTEGER}, #{gcon.rows,jdbcType=INTEGER}
+		</if>
+  </select> 
+  
+  <select id="selectCountByExchangeRate" resultType="java.lang.Long">
+  select count(e.id) from exchange_rate as e
+  where 1=1 
+  <choose>
+  	<when test="gcon.keyword!=null and gcon.keyword!=''">
+			<bind name="gcon.keyword" value="'%' + gcon.keyword + '%'" />
+			and (e.currency1 like #{gcon.keyword,jdbcType=VARCHAR}
+			
+			or e.currency2 like #{gcon.keyword,jdbcType=VARCHAR}
+			or e.currCode like #{gcon.keyword,jdbcType=VARCHAR})
+	</when> 
+  	<otherwise>
+  		<if test="exchangeRate.currency1!=null and exchangeRate.currency1!=''">
+				<bind name="exchangeRate.currency1" value="'%' + exchangeRate.currency1 + '%'" />
+				and e.currency1 like #{exchangeRate.currency1,jdbcType=VARCHAR}
+		</if>
+		<if test="exchangeRate.currency2!=null and exchangeRate.currency2!=''">
+				<bind name="exchangeRate.currency2" value="'%' + exchangeRate.currency2 + '%'" />
+				and e.currency2 like #{exchangeRate.currency2,jdbcType=VARCHAR}
+		</if>
+		<if test="exchangeRate.currCode!=null and exchangeRate.currCode!=''">
+				<bind name="exchangeRate.currCode" value="'%' + exchangeRate.currCode + '%'" />
+				and e.currCode like #{exchangeRate.currCode,jdbcType=VARCHAR}
+		</if>
+  	</otherwise>
+  		
+  	</choose>
+  </select>
+  <update id="updateByCurrCodeBatch" parameterType="java.util.List">
+    update exchange_rate
+    <trim prefix="set" suffixOverrides=",">
+            <trim prefix="value =case" suffix="end,">
+                <foreach collection="list" item="item" index="index">
+                     when currCode=#{item.currCode,jdbcType=VARCHAR} then #{item.value,jdbcType=DECIMAL}
+                </foreach>
+            </trim>
+            <trim prefix="updateTime =case" suffix="end,">
+                <foreach collection="list" item="item" index="index">
+                     when currCode=#{item.currCode,jdbcType=VARCHAR} then #{item.updateTime,jdbcType=TIMESTAMP}
+                </foreach>
+            </trim>
+     </trim>
+    <where>   
+	    <foreach collection="list" item="item" separator="or">
+	            currCode = #{item.currCode,jdbcType=VARCHAR}
+	    </foreach>
+    </where>
+  </update>
+</mapper>

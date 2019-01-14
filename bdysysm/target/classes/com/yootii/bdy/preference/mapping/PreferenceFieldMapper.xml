@@ -1,0 +1,187 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.yootii.bdy.preference.dao.PreferenceFieldMapper" >
+  <resultMap id="BaseResultMap" type="com.yootii.bdy.preference.model.PreferenceField" >
+    <id column="preferenceId" property="preferenceId" jdbcType="INTEGER" />
+    <result column="dataType" property="dataType" jdbcType="VARCHAR" />
+    <result column="preferenceName" property="preferenceName" jdbcType="VARCHAR" />
+    <result column="description" property="description" jdbcType="VARCHAR" />
+    <result column="defaultStringValue" property="defaultStringValue" jdbcType="VARCHAR" />
+    <result column="defaultIntValue" property="defaultIntValue" jdbcType="VARCHAR" />
+    <result column="preferenceType" property="preferenceType" jdbcType="VARCHAR" />
+    <result column="format" property="format" jdbcType="VARCHAR" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    preferenceId, dataType, preferenceName, description, defaultStringValue, defaultIntValue, 
+    preferenceType, format
+  </sql>
+  <sql id="Base_Column_List_p" >
+    p.preferenceId, p.dataType, p.preferenceName, p.description, p.defaultStringValue, p.defaultIntValue, 
+    p.preferenceType, p.format
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select 
+    <include refid="Base_Column_List" />
+    from preference_field
+    where preferenceId = #{preferenceId,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
+    delete from preference_field
+    where preferenceId = #{preferenceId,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.yootii.bdy.preference.model.PreferenceField" >
+    insert into preference_field (preferenceId, dataType, preferenceName, 
+      description, defaultStringValue, defaultIntValue, 
+      preferenceType, format)
+    values (#{preferenceId,jdbcType=INTEGER}, #{dataType,jdbcType=VARCHAR}, #{preferenceName,jdbcType=VARCHAR}, 
+      #{description,jdbcType=VARCHAR}, #{defaultStringValue,jdbcType=VARCHAR}, #{defaultIntValue,jdbcType=VARCHAR}, 
+      #{preferenceType,jdbcType=VARCHAR}, #{format,jdbcType=VARCHAR})
+  </insert>
+  <insert id="insertSelective" parameterType="com.yootii.bdy.preference.model.PreferenceField" useGeneratedKeys="true" keyProperty="preferenceId">
+    insert into preference_field
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="preferenceId != null" >
+        preferenceId,
+      </if>
+      <if test="dataType != null" >
+        dataType,
+      </if>
+      <if test="preferenceName != null" >
+        preferenceName,
+      </if>
+      <if test="description != null" >
+        description,
+      </if>
+      <if test="defaultStringValue != null" >
+        defaultStringValue,
+      </if>
+      <if test="defaultIntValue != null" >
+        defaultIntValue,
+      </if>
+      <if test="preferenceType != null" >
+        preferenceType,
+      </if>
+      <if test="format != null" >
+        format,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="preferenceId != null" >
+        #{preferenceId,jdbcType=INTEGER},
+      </if>
+      <if test="dataType != null" >
+        #{dataType,jdbcType=VARCHAR},
+      </if>
+      <if test="preferenceName != null" >
+        #{preferenceName,jdbcType=VARCHAR},
+      </if>
+      <if test="description != null" >
+        #{description,jdbcType=VARCHAR},
+      </if>
+      <if test="defaultStringValue != null" >
+        #{defaultStringValue,jdbcType=VARCHAR},
+      </if>
+      <if test="defaultIntValue != null" >
+        #{defaultIntValue,jdbcType=VARCHAR},
+      </if>
+      <if test="preferenceType != null" >
+        #{preferenceType,jdbcType=VARCHAR},
+      </if>
+      <if test="format != null" >
+        #{format,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.yootii.bdy.preference.model.PreferenceField" >
+    update preference_field
+    <set >
+      <if test="dataType != null" >
+        dataType = #{dataType,jdbcType=VARCHAR},
+      </if>
+      <if test="preferenceName != null" >
+        preferenceName = #{preferenceName,jdbcType=VARCHAR},
+      </if>
+      <if test="description != null" >
+        description = #{description,jdbcType=VARCHAR},
+      </if>
+      <if test="defaultStringValue != null" >
+        defaultStringValue = #{defaultStringValue,jdbcType=VARCHAR},
+      </if>
+      <if test="defaultIntValue != null" >
+        defaultIntValue = #{defaultIntValue,jdbcType=VARCHAR},
+      </if>
+      <if test="preferenceType != null" >
+        preferenceType = #{preferenceType,jdbcType=VARCHAR},
+      </if>
+      <if test="format != null" >
+        format = #{format,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where preferenceId = #{preferenceId,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.yootii.bdy.preference.model.PreferenceField" >
+    update preference_field
+    set dataType = #{dataType,jdbcType=VARCHAR},
+      preferenceName = #{preferenceName,jdbcType=VARCHAR},
+      description = #{description,jdbcType=VARCHAR},
+      defaultStringValue = #{defaultStringValue,jdbcType=VARCHAR},
+      defaultIntValue = #{defaultIntValue,jdbcType=VARCHAR},
+      preferenceType = #{preferenceType,jdbcType=VARCHAR},
+      format = #{format,jdbcType=VARCHAR}
+    where preferenceId = #{preferenceId,jdbcType=INTEGER}
+  </update>
+  <select id="selectByPreferenceField" resultMap="BaseResultMap">
+	  select <include refid="Base_Column_List"/> from preference_field where 1=1 
+	  <if test="preferenceField.dataType  != null and preferenceField.dataType  != ''">
+	  and dataType = #{preferenceField.dataType,jdbcType=VARCHAR}
+	  </if>
+	  <if test="preferenceField.preferenceName  != null and preferenceField.preferenceName  != ''">
+	  and preferenceName = #{preferenceField.preferenceName,jdbcType=VARCHAR}
+	  </if>
+	  <if test="preferenceField.description  != null and preferenceField.description  != ''">
+	  and description = #{preferenceField.description,jdbcType=VARCHAR}
+	  </if>
+	  <if test="preferenceField.defaultStringValue  != null and preferenceField.defaultStringValue  != ''">
+	  and defaultStringValue = #{preferenceField.defaultStringValue,jdbcType=VARCHAR}
+	  </if>
+	  <if test="preferenceField.defaultIntValue  != null and preferenceField.defaultIntValue  != ''">
+	  and defaultIntValue = #{preferenceField.defaultIntValue,jdbcType=VARCHAR}
+	  </if>
+	  <if test="preferenceField.preferenceType  != null and preferenceField.preferenceType  != ''">
+	  and preferenceType = #{preferenceField.preferenceType,jdbcType=VARCHAR}
+	  </if>
+	  <if test="preferenceField.format  != null and preferenceField.format  != ''">
+	  and format= #{preferenceField.format,jdbcType=VARCHAR}
+	  </if>
+	  <bind name="gcon.offset" value="gcon.offset" />
+		<bind name="gcon.rows" value="gcon.rows" />
+		<if test="gcon.rows != null and gcon.offset != null">
+		limit #{gcon.offset,jdbcType=INTEGER}, #{gcon.rows,jdbcType=INTEGER}
+		</if>
+		
+  </select>
+  <select id="selectCountByPreferenceField" resultType="java.lang.Long">
+	  select count(1) from preference_field where 1=1 
+	  <if test="preferenceField.dataType  != null and preferenceField.dataType  != ''">
+	  and dataType = #{preferenceField.dataType,jdbcType=VARCHAR}
+	  </if>
+	  <if test="preferenceField.preferenceName  != null and preferenceField.preferenceName  != ''">
+	  and preferenceName = #{preferenceField.preferenceName,jdbcType=VARCHAR}
+	  </if>
+	  <if test="preferenceField.description  != null and preferenceField.description  != ''">
+	  and description = #{preferenceField.description,jdbcType=VARCHAR}
+	  </if>
+	  <if test="preferenceField.defaultStringValue  != null and preferenceField.defaultStringValue  != ''">
+	  and defaultStringValue = #{preferenceField.defaultStringValue,jdbcType=VARCHAR}
+	  </if>
+	  <if test="preferenceField.defaultIntValue  != null and preferenceField.defaultIntValue  != ''">
+	  and defaultIntValue = #{preferenceField.defaultIntValue,jdbcType=VARCHAR}
+	  </if>
+	  <if test="preferenceField.preferenceType  != null and preferenceField.preferenceType  != ''">
+	  and preferenceType = #{preferenceField.preferenceType,jdbcType=VARCHAR}
+	  </if>
+	  <if test="preferenceField.format  != null and preferenceField.format  != ''">
+	  and format= #{preferenceField.format,jdbcType=VARCHAR}
+	  </if>
+  </select>
+</mapper>

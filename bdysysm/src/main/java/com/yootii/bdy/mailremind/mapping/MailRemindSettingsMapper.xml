@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yootii.bdy.mailremind.dao.MailRemindSettingsMapper">
+  <resultMap id="BaseResultMap" type="com.yootii.bdy.mailremind.model.MailRemindSettings">
+    <id column="setId" jdbcType="INTEGER" property="setId" />
+    <result column="custId" jdbcType="INTEGER" property="custId" />
+    <result column="remindType" jdbcType="INTEGER" property="remindType" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    setId, custId, remindType
+  </sql>
+  <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from mail_remind_settings
+    where setId = #{setId,jdbcType=INTEGER}
+  </select>
+  <select id="selectByCustIdAndRemindType" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from mail_remind_settings
+    where custId = #{custId,jdbcType=INTEGER} and remindType = #{remindType,jdbcType=INTEGER}
+  </select>
+  <select id="selectByCustId" resultType="java.util.Map">
+    select 
+    a.setId, a.custId, a.remindType, b.remindDesc
+    from mail_remind_settings a
+    left join mail_remind_type b on a.remindType=b.remindType
+    where custId = #{custId,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+    delete from mail_remind_settings
+    where setId = #{setId,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.yootii.bdy.mailremind.model.MailRemindSettings">
+    insert into mail_remind_settings (setId, custId, remindType
+      )
+    values (#{setId,jdbcType=INTEGER}, #{custId,jdbcType=INTEGER}, #{remindType,jdbcType=INTEGER}
+      )
+  </insert>
+  <insert id="insertSelective" parameterType="com.yootii.bdy.mailremind.model.MailRemindSettings">
+    insert into mail_remind_settings
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="setId != null">
+        setId,
+      </if>
+      <if test="custId != null">
+        custId,
+      </if>
+      <if test="remindType != null">
+        remindType,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="setId != null">
+        #{setId,jdbcType=INTEGER},
+      </if>
+      <if test="custId != null">
+        #{custId,jdbcType=INTEGER},
+      </if>
+      <if test="remindType != null">
+        #{remindType,jdbcType=INTEGER},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.yootii.bdy.mailremind.model.MailRemindSettings">
+    update mail_remind_settings
+    <set>
+      <if test="custId != null">
+        custId = #{custId,jdbcType=INTEGER},
+      </if>
+      <if test="remindType != null">
+        remindType = #{remindType,jdbcType=INTEGER},
+      </if>
+    </set>
+    where setId = #{setId,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.yootii.bdy.mailremind.model.MailRemindSettings">
+    update mail_remind_settings
+    set custId = #{custId,jdbcType=INTEGER},
+      remindType = #{remindType,jdbcType=INTEGER}
+    where setId = #{setId,jdbcType=INTEGER}
+  </update>
+</mapper>

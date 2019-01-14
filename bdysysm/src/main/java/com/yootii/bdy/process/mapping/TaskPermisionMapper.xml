@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.yootii.bdy.process.dao.TaskPermissionMapper" >
+  <resultMap id="BaseResultMap" type="com.yootii.bdy.process.model.TaskPermission" >
+    <id column="tpId" property="tpId" jdbcType="INTEGER" />
+    <result column="defId" property="defId" jdbcType="VARCHAR" />
+    <result column="taskName" property="taskName" jdbcType="VARCHAR" />
+    <result column="taskKey" property="taskKey" jdbcType="VARCHAR" />
+    <result column="permissionKey" property="permissionKey" jdbcType="INTEGER" />
+    <result column="permissionValue" property="permissionValue" jdbcType="VARCHAR" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    tpId, defId, taskName, taskKey, permissionKey, permissionValue
+  </sql>
+  <select id="selectByTaskPermission" resultMap="BaseResultMap" parameterType="com.yootii.bdy.process.model.TaskPermission"  >
+    select 
+    <include refid="Base_Column_List" />
+    from task_permission
+    where defId = #{defId,jdbcType=VARCHAR} and taskName= #{taskName,jdbcType=VARCHAR} and taskKey= #{taskKey,jdbcType=VARCHAR}
+  </select>
+  
+</mapper>

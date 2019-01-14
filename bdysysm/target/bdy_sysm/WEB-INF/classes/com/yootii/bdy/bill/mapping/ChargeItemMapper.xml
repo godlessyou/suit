@@ -1,0 +1,267 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yootii.bdy.bill.dao.ChargeItemMapper">
+  <resultMap id="BaseResultMap" type="com.yootii.bdy.bill.model.ChargeItem">
+    <id column="chargeItemId" jdbcType="INTEGER" property="chargeItemId" />
+    <result column="agencyId" jdbcType="INTEGER" property="agencyId" />
+    <result column="chargeType" jdbcType="VARCHAR" property="chargeType" />
+    <result column="engName" jdbcType="VARCHAR" property="engName" />
+    <result column="chnName" jdbcType="VARCHAR" property="chnName" />
+    <result column="caseType" jdbcType="VARCHAR" property="caseType" />
+    <result column="price" jdbcType="DECIMAL" property="price" />
+    <result column="currency" jdbcType="VARCHAR" property="currency" />
+    <result column="memo" jdbcType="VARCHAR" property="memo" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    chargeItemId, agencyId, chargeType, engName, chnName, caseType, price, currency, 
+    memo
+  </sql>
+  <sql id="Base_Column_List_c">
+    c.chargeItemId, c.agencyId, c.chargeType, c.engName, c.chnName, c.caseType, c.price, c.currency, 
+    c.memo
+  </sql>
+  <select id="selectChargeItemListById" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+  
+    select 
+    <include refid="Base_Column_List_c" />
+    from charge_item c, agency_service b
+	where c.chargeItemId=b.chargeItemId
+	and b.agencyServiceId=#{agencyServiceId,jdbcType=INTEGER}
+		    	 
+    union    
+    
+    select    
+    <include refid="Base_Column_List_c" />
+    from charge_item c,          
+	 (
+	   select a.caseType, a.agencyId from charge_item a, agency_service b
+	    where a.chargeItemId=b.chargeItemId
+	    and b.agencyServiceId=#{agencyServiceId,jdbcType=INTEGER} 
+	 ) d 
+    where  1=1
+    and c.agencyId=d.agencyId  
+    and c.caseType=d.caseType
+    and (c.chargeType='官费' or c.chargeType='杂费')
+    
+  </select>
+  
+  <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from charge_item
+    where chargeItemId = #{chargeItemId,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+    delete from charge_item
+    where chargeItemId = #{chargeItemId,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.yootii.bdy.bill.model.ChargeItem">
+    insert into charge_item (chargeItemId, agencyId, chargeType, 
+      engName, chnName, caseType, 
+      price, currency, memo
+      )
+    values (#{chargeItemId,jdbcType=INTEGER}, #{agencyId,jdbcType=INTEGER}, #{chargeType,jdbcType=VARCHAR}, 
+      #{engName,jdbcType=VARCHAR}, #{chnName,jdbcType=VARCHAR}, #{caseType,jdbcType=VARCHAR}, 
+      #{price,jdbcType=DECIMAL}, #{currency,jdbcType=VARCHAR}, #{memo,jdbcType=VARCHAR}
+      )
+  </insert>
+  <insert id="insertSelective" parameterType="com.yootii.bdy.bill.model.ChargeItem" useGeneratedKeys="true" keyProperty="chargeItemId">
+    insert into charge_item
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="chargeItemId != null">
+        chargeItemId,
+      </if>
+      <if test="agencyId != null">
+        agencyId,
+      </if>
+      <if test="chargeType != null">
+        chargeType,
+      </if>
+      <if test="engName != null">
+        engName,
+      </if>
+      <if test="chnName != null">
+        chnName,
+      </if>
+      <if test="caseType != null">
+        caseType,
+      </if>
+      <if test="price != null">
+        price,
+      </if>
+      <if test="currency != null">
+        currency,
+      </if>
+      <if test="memo != null">
+        memo,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="chargeItemId != null">
+        #{chargeItemId,jdbcType=INTEGER},
+      </if>
+      <if test="agencyId != null">
+        #{agencyId,jdbcType=INTEGER},
+      </if>
+      <if test="chargeType != null">
+        #{chargeType,jdbcType=VARCHAR},
+      </if>
+      <if test="engName != null">
+        #{engName,jdbcType=VARCHAR},
+      </if>
+      <if test="chnName != null">
+        #{chnName,jdbcType=VARCHAR},
+      </if>
+      <if test="caseType != null">
+        #{caseType,jdbcType=VARCHAR},
+      </if>
+      <if test="price != null">
+        #{price,jdbcType=DECIMAL},
+      </if>
+      <if test="currency != null">
+        #{currency,jdbcType=VARCHAR},
+      </if>
+      <if test="memo != null">
+        #{memo,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.yootii.bdy.bill.model.ChargeItem">
+    update charge_item
+    <set>
+      <if test="agencyId != null">
+        agencyId = #{agencyId,jdbcType=INTEGER},
+      </if>
+      <if test="chargeType != null">
+        chargeType = #{chargeType,jdbcType=VARCHAR},
+      </if>
+      <if test="engName != null">
+        engName = #{engName,jdbcType=VARCHAR},
+      </if>
+      <if test="chnName != null">
+        chnName = #{chnName,jdbcType=VARCHAR},
+      </if>
+      <if test="caseType != null">
+        caseType = #{caseType,jdbcType=VARCHAR},
+      </if>
+      <if test="price != null">
+        price = #{price,jdbcType=DECIMAL},
+      </if>
+      <if test="currency != null">
+        currency = #{currency,jdbcType=VARCHAR},
+      </if>
+      <if test="memo != null">
+        memo = #{memo,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where chargeItemId = #{chargeItemId,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.yootii.bdy.bill.model.ChargeItem">
+    update charge_item
+    set agencyId = #{agencyId,jdbcType=INTEGER},
+      chargeType = #{chargeType,jdbcType=VARCHAR},
+      engName = #{engName,jdbcType=VARCHAR},
+      chnName = #{chnName,jdbcType=VARCHAR},
+      caseType = #{caseType,jdbcType=VARCHAR},
+      price = #{price,jdbcType=DECIMAL},
+      currency = #{currency,jdbcType=VARCHAR},
+      memo = #{memo,jdbcType=VARCHAR}
+    where chargeItemId = #{chargeItemId,jdbcType=INTEGER}
+  </update>
+  <select id="checkName" resultType="java.lang.Integer">
+  select count(chargeItemId) from charge_item where chnName =#{chargeItem.chnName}
+  <if test="chargeItem.chargeItemId != null and chargeItem.chargeItemId != ''">
+  and chargeItemId != #{chargeItem.chargeItemId}
+  </if>
+  </select>
+  <select id="selectByChargeItem" resultMap="BaseResultMap">
+  select <include refid="Base_Column_List_c"/> from charge_item as c
+  where 1=1
+  <choose>
+  	<when test="gcon.keyword!=null and gcon.keyword!=''">
+			<bind name="gcon.keyword" value="'%' + gcon.keyword + '%'" />
+			and (c.chargeType like #{gcon.keyword,jdbcType=VARCHAR}
+			
+			or c.engName like #{gcon.keyword,jdbcType=VARCHAR}
+			
+			or c.chnName like #{gcon.keyword,jdbcType=VARCHAR}
+			or c.caseType like #{gcon.keyword,jdbcType=VARCHAR})
+	</when> 
+  	<otherwise>
+  		<if test="chargeItem.chargeType!=null and chargeItem.chargeType!=''">
+				<bind name="chargeItem.chargeType" value="'%' + chargeItem.chargeType + '%'" />
+				and c.chargeType like #{chargeItem.chargeType,jdbcType=VARCHAR}
+		</if>
+		<if test="chargeItem.engName!=null and chargeItem.engName!=''">
+				<bind name="chargeItem.engName" value="'%' + chargeItem.engName + '%'" />
+				and c.engName like #{chargeItem.engName,jdbcType=VARCHAR}
+		</if>
+		<if test="chargeItem.chnName!=null and chargeItem.chnName!=''">
+				<bind name="chargeItem.chnName" value="'%' + chargeItem.chnName + '%'" />
+				and c.chnName like #{chargeItem.chnName,jdbcType=VARCHAR}
+		</if>
+		<if test="chargeItem.caseType!=null and chargeItem.caseType!=''">
+				<bind name="chargeItem.caseType" value="'%' + chargeItem.caseType + '%'" />
+				and c.caseType like #{chargeItem.caseType,jdbcType=VARCHAR}
+		</if>
+		<if test="chargeItem.currency!=null and chargeItem.currency!=''">
+				<bind name="chargeItem.currency" value="'%' + chargeItem.currency + '%'" />
+				and c.currency like #{chargeItem.caseType,jdbcType=VARCHAR}
+		</if>
+  	</otherwise>
+  		
+  	</choose>
+  		<if test="chargeItem.agencyId!=null and chargeItem.agencyId!=''">
+				<bind name="chargeItem.agencyId" value="chargeItem.agencyId" />
+				and c.agencyId = #{chargeItem.agencyId,jdbcType=INTEGER}
+		</if>
+  		<bind name="gcon.offset" value="gcon.offset" /> 
+		<bind name="gcon.rows" value="gcon.rows" /> 
+		<if test="gcon.rows != null and gcon.offset != null">
+		limit #{gcon.offset,jdbcType=INTEGER}, #{gcon.rows,jdbcType=INTEGER}
+		</if>
+  </select>
+  <select id="selectCountByChargeItem" resultType="java.lang.Long">
+  	select count(c.chargeItemId) from charge_item as c
+  	where 1=1
+  <choose>
+  	<when test="gcon.keyword!=null and gcon.keyword!=''">
+			<bind name="gcon.keyword" value="'%' + gcon.keyword + '%'" />
+			and (c.chargeType like #{gcon.keyword,jdbcType=VARCHAR}
+			
+			or c.engName like #{gcon.keyword,jdbcType=VARCHAR}
+			
+			or c.chnName like #{gcon.keyword,jdbcType=VARCHAR}
+			or c.caseType like #{gcon.keyword,jdbcType=VARCHAR})
+	</when> 
+  	<otherwise>
+  		<if test="chargeItem.chargeType!=null and chargeItem.chargeType!=''">
+				<bind name="chargeItem.chargeType" value="'%' + chargeItem.chargeType + '%'" />
+				and c.chargeType like #{chargeItem.chargeType,jdbcType=VARCHAR}
+		</if>
+		<if test="chargeItem.engName!=null and chargeItem.engName!=''">
+				<bind name="chargeItem.engName" value="'%' + chargeItem.engName + '%'" />
+				and c.engName like #{chargeItem.engName,jdbcType=VARCHAR}
+		</if>
+		<if test="chargeItem.chnName!=null and chargeItem.chnName!=''">
+				<bind name="chargeItem.chnName" value="'%' + chargeItem.chnName + '%'" />
+				and c.chnName like #{chargeItem.chnName,jdbcType=VARCHAR}
+		</if>
+		<if test="chargeItem.caseType!=null and chargeItem.caseType!=''">
+				<bind name="chargeItem.caseType" value="'%' + chargeItem.caseType + '%'" />
+				and c.caseType like #{chargeItem.caseType,jdbcType=VARCHAR}
+		</if>
+		<if test="chargeItem.currency!=null and chargeItem.currency!=''">
+				<bind name="chargeItem.currency" value="'%' + chargeItem.currency + '%'" />
+				and c.currency like #{chargeItem.caseType,jdbcType=VARCHAR}
+		</if>
+		
+  	</otherwise>
+  		
+  	</choose>
+  		<if test="chargeItem.agencyId!=null and chargeItem.agencyId!=''">
+				<bind name="chargeItem.agencyId" value="chargeItem.agencyId" />
+				and c.agencyId = #{chargeItem.agencyId,jdbcType=INTEGER}
+		</if>
+  </select>
+</mapper>

@@ -1,0 +1,163 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.yootii.bdy.taskremind.dao.TaskRemindMapper" >
+  <resultMap id="BaseResultMap" type="com.yootii.bdy.taskremind.model.TaskRemind" >
+    <id column="trid" property="trid" jdbcType="INTEGER" />
+    <result column="title" property="title" jdbcType="VARCHAR" />
+    <result column="message" property="message" jdbcType="VARCHAR" />
+    <result column="type" property="type" jdbcType="INTEGER" />
+    <result column="isclose" property="isclose" jdbcType="INTEGER" />
+    <result column="agencyid" property="agencyid" jdbcType="INTEGER" />
+    <result column="taskid" property="taskid" jdbcType="VARCHAR" />
+  </resultMap>
+  <resultMap id="SimpleCountResultMap" type="java.util.HashMap">
+	<result column="count" jdbcType="INTEGER" property="count" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    trid, title, message, type, isclose, agencyid,taskid
+  </sql>
+  
+  <select id="selectTaskRemindList" resultMap="BaseResultMap" >
+    select 
+    <include refid="Base_Column_List" />
+    from task_remind
+    <bind name="taskRemind.agencyid" value="taskRemind.agencyid" />
+    where agencyid = #{taskRemind.agencyid,jdbcType=INTEGER}
+   	and isclose=0
+	<if test="userlist != null and userlist.size()>0">
+		and taskId in 
+		<foreach collection="userlist" index="index" item="item" open="(" separator="," close=")">
+       	 	#{item.taskId}
+      	</foreach>
+    </if>
+    <if test="userlist == null or userlist.size()==0">
+     and 1=0
+    </if>
+	order by title
+	<bind name="gcon.offset" value="gcon.offset" />
+	<bind name="gcon.rows" value="gcon.rows" />
+	limit #{gcon.offset,jdbcType=INTEGER}, #{gcon.rows,jdbcType=INTEGER}
+  </select>
+  <select id="selectTaskRemindCount" resultMap="SimpleCountResultMap" >
+    select count(*) as count
+    from task_remind
+   	<bind name="taskRemind.agencyid" value="taskRemind.agencyid" />
+    where agencyid = #{taskRemind.agencyid,jdbcType=INTEGER}
+    and isclose=0
+    <if test="userlist != null and userlist.size()>0">
+		and taskId in 
+		<foreach collection="userlist" index="index" item="item" open="(" separator="," close=")">
+       	 	#{item.taskId}
+      	</foreach>
+    </if>
+    <if test="userlist == null or userlist.size()==0">
+     and 1=0
+    </if>
+  </select>
+  
+  
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select 
+    <include refid="Base_Column_List" />
+    from task_remind
+    where trid = #{trid,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
+    delete from task_remind
+    where trid = #{trid,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.yootii.bdy.taskremind.model.TaskRemind" >
+    insert into task_remind (trid, title, message, 
+      type, isclose, agencyid,taskid
+      )
+    values (#{trid,jdbcType=INTEGER}, #{title,jdbcType=VARCHAR}, #{message,jdbcType=VARCHAR}, 
+      #{type,jdbcType=INTEGER}, #{isclose,jdbcType=INTEGER}, #{agencyid,jdbcType=INTEGER},
+      #{taskid,jdbcType=VARCHAR}
+      )
+  </insert>
+  <insert id="insertSelective" parameterType="com.yootii.bdy.taskremind.model.TaskRemind" >
+    insert into task_remind
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="trid != null" >
+        trid,
+      </if>
+      <if test="title != null" >
+        title,
+      </if>
+      <if test="message != null" >
+        message,
+      </if>
+      <if test="type != null" >
+        type,
+      </if>
+      <if test="isclose != null" >
+        isclose,
+      </if>
+      <if test="agencyid != null" >
+        agencyid,
+      </if>      
+      <if test="taskid != null" >
+        taskid,
+      </if>      
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="trid != null" >
+        #{trid,jdbcType=INTEGER},
+      </if>
+      <if test="title != null" >
+        #{title,jdbcType=VARCHAR},
+      </if>
+      <if test="message != null" >
+        #{message,jdbcType=VARCHAR},
+      </if>
+      <if test="type != null" >
+        #{type,jdbcType=INTEGER},
+      </if>
+      <if test="isclose != null" >
+        #{isclose,jdbcType=INTEGER},
+      </if>
+      <if test="agencyid != null" >
+        #{agencyid,jdbcType=INTEGER},
+      </if>
+      <if test="taskid != null" >
+        #{taskid,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.yootii.bdy.taskremind.model.TaskRemind" >
+    update task_remind
+    <set >
+      <if test="title != null" >
+        title = #{title,jdbcType=VARCHAR},
+      </if>
+      <if test="message != null" >
+        message = #{message,jdbcType=VARCHAR},
+      </if>
+      <if test="type != null" >
+        type = #{type,jdbcType=INTEGER},
+      </if>
+      <if test="isclose != null" >
+        isclose = #{isclose,jdbcType=INTEGER},
+      </if>
+      <if test="agencyid != null" >
+        agencyid = #{agencyid,jdbcType=INTEGER},
+      </if>      
+      <if test="taskid != null" >
+        taskid = #{taskid,jdbcType=VARCHAR},
+      </if>
+      
+    </set>
+    where trid = #{trid,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.yootii.bdy.taskremind.model.TaskRemind" >
+    update task_remind
+    set title = #{title,jdbcType=VARCHAR},
+      message = #{message,jdbcType=VARCHAR},
+      type = #{type,jdbcType=INTEGER},
+      isclose = #{isclose,jdbcType=INTEGER},
+      agencyid = #{agencyid,jdbcType=INTEGER},
+      taskid = #{taskid,jdbcType=VARCHAR}
+      
+    where trid = #{trid,jdbcType=INTEGER}
+  </update>
+</mapper>

@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.yootii.bdy.agency.dao.CooperationAgencyMapper" >
+  <resultMap id="BaseResultMap" type="com.yootii.bdy.agency.model.CooperationAgency" >
+    <id column="id" property="id" jdbcType="INTEGER" />
+    <result column="agencyId" property="agencyId" jdbcType="INTEGER" />
+    <result column="cooperationAgencyId" property="cooperationAgencyId" jdbcType="INTEGER" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    id, agencyId, cooperationAgencyId
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select 
+    <include refid="Base_Column_List" />
+    from cooperation_agency
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
+    delete from cooperation_agency
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.yootii.bdy.agency.model.CooperationAgency" >
+    insert into cooperation_agency (id, agencyId, cooperationAgencyId
+      )
+    values (#{id,jdbcType=INTEGER}, #{agencyId,jdbcType=INTEGER}, #{cooperationAgencyId,jdbcType=INTEGER}
+      )
+  </insert>
+  <insert id="insertSelective" parameterType="com.yootii.bdy.agency.model.CooperationAgency" useGeneratedKeys="true" keyProperty="id">
+    insert into cooperation_agency
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        id,
+      </if>
+      <if test="agencyId != null" >
+        agencyId,
+      </if>
+      <if test="cooperationAgencyId != null" >
+        cooperationAgencyId,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        #{id,jdbcType=INTEGER},
+      </if>
+      <if test="agencyId != null" >
+        #{agencyId,jdbcType=INTEGER},
+      </if>
+      <if test="cooperationAgencyId != null" >
+        #{cooperationAgencyId,jdbcType=INTEGER},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.yootii.bdy.agency.model.CooperationAgency" >
+    update cooperation_agency
+    <set >
+      <if test="agencyId != null" >
+        agencyId = #{agencyId,jdbcType=INTEGER},
+      </if>
+      <if test="cooperationAgencyId != null" >
+        cooperationAgencyId = #{cooperationAgencyId,jdbcType=INTEGER},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.yootii.bdy.agency.model.CooperationAgency" >
+    update cooperation_agency
+    set agencyId = #{agencyId,jdbcType=INTEGER},
+      cooperationAgencyId = #{cooperationAgencyId,jdbcType=INTEGER}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <select id="selectCooperationAgencyCountByAgencyId" parameterType="java.lang.Integer" resultType="java.lang.Integer">
+  SELECT COUNT(1) FROM cooperation_agency 
+  WHERE agencyId= #{agencyId,jdbcType=INTEGER} 
+   or cooperationAgencyId = #{agencyId,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByCooperationAgency" parameterType="com.yootii.bdy.agency.model.CooperationAgency">
+  delete from cooperation_agency
+    where (agencyId = #{agencyId,jdbcType=INTEGER}
+    	and cooperationAgencyId = #{cooperationAgencyId,jdbcType=INTEGER})
+    or (agencyId = #{agencyId,jdbcType=INTEGER}
+    	and cooperationAgencyId = #{cooperationAgencyId,jdbcType=INTEGER})
+  </delete>
+  <select id="selectCountByCooperationAgency" resultType="java.lang.Long">
+ 	 SELECT	COUNT(a.id)	   
+	FROM agency a 		      
+	WHERE 1=1
+	AND a.id  IN  
+	(SELECT ca.cooperationAgencyId AS id FROM cooperation_agency  ca WHERE  ca.agencyId = #{agency.id,jdbcType=INTEGER}) 
+	OR  a.id  IN  
+	(SELECT ca.agencyId AS id FROM cooperation_agency  ca WHERE  ca.cooperationAgencyId = #{agency.id,jdbcType=INTEGER}) 
+  </select>
+</mapper>

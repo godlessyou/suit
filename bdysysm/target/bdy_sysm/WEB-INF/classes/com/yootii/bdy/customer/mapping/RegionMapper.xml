@@ -1,0 +1,169 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.yootii.bdy.customer.dao.RegionMapper" >
+  <resultMap id="BaseResultMap" type="com.yootii.bdy.customer.model.Region" >
+    <id column="regionId" property="regionId" jdbcType="INTEGER" />
+    <result column="regionName" property="regionName" jdbcType="VARCHAR" />
+    <result column="level" property="level" jdbcType="INTEGER" />
+    <result column="parentId" property="parentId" jdbcType="INTEGER" />
+  </resultMap>
+  
+  <resultMap id="RegionsMap" type="com.yootii.bdy.customer.model.Regions" >
+    <id column="regionId" property="regionId" jdbcType="INTEGER" />
+    <result column="regionName" property="regionName" jdbcType="VARCHAR" />
+    <result column="level" property="level" jdbcType="INTEGER" />
+    <collection property="citys" ofType="com.yootii.bdy.customer.model.Regions">   
+        <result column="rgId" property="regionId" jdbcType="INTEGER" /> 
+        <result column="rgName" property="regionName" jdbcType="VARCHAR" />  
+        <result column="rgLevel" property="level" jdbcType="INTEGER" />
+        <collection property="citys" ofType="com.yootii.bdy.customer.model.Regions">   
+	        <result column="rId" property="regionId" jdbcType="INTEGER" /> 
+	        <result column="rName" property="regionName" jdbcType="VARCHAR" />
+	        <result column="rLevel" property="level" jdbcType="INTEGER" />     
+		</collection>    
+	</collection> 
+  </resultMap>
+  <sql id="Base_Column_List" >
+    regionId, regionName, level, parentId
+  </sql>
+  
+  <select id="selectAllRegion" resultMap="BaseResultMap">
+  	select <include refid="Base_Column_List"/> 
+  	from region  
+  </select>
+  
+  <select id="selectRegionList" resultMap="BaseResultMap">
+  	select <include refid="Base_Column_List"/> 
+  	from region
+  	where 1=1 
+  	<choose>
+		<when test="gcon.keyword!=null and gcon.keyword!=''">
+			<bind name="gcon.keyword" value="'%' + gcon.keyword + '%'" />
+			and ( regionName like #{gcon.keyword,jdbcType=VARCHAR} )
+		</when>
+		<otherwise>
+			<if test="region.regionName!=null and region.regionName!=''">
+				<bind name="region.regionName" value="'%' + region.regionName + '%'" />
+				and regionName like #{region.regionName,jdbcType=VARCHAR}
+			</if>	
+		</otherwise>			
+	</choose>		
+	<bind name="gcon.offset" value="gcon.offset" />
+	<bind name="gcon.rows" value="gcon.rows" />
+	limit #{gcon.offset,jdbcType=INTEGER}, #{gcon.rows,jdbcType=INTEGER}
+  </select>
+  
+  
+  <select id="selectRegions" resultMap="RegionsMap">
+		select a.regionId, a.regionName, a.level, 
+		b.regionId as rgId, b.regionName as rgName, b.level as rgLevel, 
+		c.regionId as rId, c.regionName as rName, c.level as rLevel 
+		from 
+		(
+			select * from  region where level=0
+		) a left join 
+		(
+			select * from  region where level=1
+		) b on a.regionId=b.parentId
+		left join 
+		(
+			select * from  region where level=2
+		) c on b.regionId=c.parentId
+		
+		order by regionId, rgId, rId
+  </select>
+  
+  
+  
+  
+  
+   <select id="selectRegionCount" resultType="java.lang.Long">
+  	select count(*)
+  	from region 
+  	where 1=1 
+  	<choose>
+		<when test="gcon.keyword!=null and gcon.keyword!=''">
+			<bind name="gcon.keyword" value="'%' + gcon.keyword + '%'" />
+			and ( regionName like #{gcon.keyword,jdbcType=VARCHAR} )
+		</when>
+		<otherwise>
+			<if test="region.regionName!=null and region.regionName!=''">
+				<bind name="region.regionName" value="'%' + region.regionName + '%'" />
+				and regionName like #{region.regionName,jdbcType=VARCHAR}
+			</if>
+		</otherwise>				
+	</choose>		
+  </select>
+  
+  
+  
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select 
+    <include refid="Base_Column_List" />
+    from region
+    where regionId = #{regionId,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
+    delete from region
+    where regionId = #{regionId,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.yootii.bdy.customer.model.Region" >
+    insert into region (regionId, regionName, level, 
+      parentId)
+    values (#{regionId,jdbcType=INTEGER}, #{regionName,jdbcType=VARCHAR}, #{level,jdbcType=INTEGER}, 
+      #{parentId,jdbcType=INTEGER})
+  </insert>
+  <insert id="insertSelective" parameterType="com.yootii.bdy.customer.model.Region" >
+    insert into region
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="regionId != null" >
+        regionId,
+      </if>
+      <if test="regionName != null" >
+        regionName,
+      </if>
+      <if test="level != null" >
+        level,
+      </if>
+      <if test="parentId != null" >
+        parentId,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="regionId != null" >
+        #{regionId,jdbcType=INTEGER},
+      </if>
+      <if test="regionName != null" >
+        #{regionName,jdbcType=VARCHAR},
+      </if>
+      <if test="level != null" >
+        #{level,jdbcType=INTEGER},
+      </if>
+      <if test="parentId != null" >
+        #{parentId,jdbcType=INTEGER},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.yootii.bdy.customer.model.Region" >
+    update region
+    <set >
+      <if test="regionName != null" >
+        regionName = #{regionName,jdbcType=VARCHAR},
+      </if>
+      <if test="level != null" >
+        level = #{level,jdbcType=INTEGER},
+      </if>
+      <if test="parentId != null" >
+        parentId = #{parentId,jdbcType=INTEGER},
+      </if>
+    </set>
+    where regionId = #{regionId,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.yootii.bdy.customer.model.Region" >
+    update region
+    set regionName = #{regionName,jdbcType=VARCHAR},
+      level = #{level,jdbcType=INTEGER},
+      parentId = #{parentId,jdbcType=INTEGER}
+    where regionId = #{regionId,jdbcType=INTEGER}
+  </update>
+</mapper>

@@ -1,0 +1,143 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.yootii.bdy.preference.dao.PreferenceValueMapper" >
+  <resultMap id="BaseResultMap" type="com.yootii.bdy.preference.model.PreferenceValue" >
+    <id column="id" property="id" jdbcType="INTEGER" />
+    <result column="userId" property="userId" jdbcType="INTEGER" />
+    <result column="customerId" property="customerId" jdbcType="INTEGER" />
+    <result column="preferenceId" property="preferenceId" jdbcType="INTEGER" />
+    <result column="stringValue" property="stringValue" jdbcType="VARCHAR" />
+    <result column="intValue" property="intValue" jdbcType="INTEGER" />
+    <result column="preferenceName" property="preferenceName" jdbcType="VARCHAR" />
+    <result column="description" property="description" jdbcType="VARCHAR" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    id, userId, customerId, preferenceId, stringValue, intValue
+  </sql>
+  <sql id="Base_Column_List_p" >
+    p.id, p.userId, p.customerId, p.preferenceId, p.stringValue, p.intValue
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select 
+    <include refid="Base_Column_List" />
+    from preference_value
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
+    delete from preference_value
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.yootii.bdy.preference.model.PreferenceValue" >
+    insert into preference_value (id, userId, customerId, 
+      preferenceId, stringValue, intValue
+      )
+    values (#{id,jdbcType=INTEGER}, #{userId,jdbcType=INTEGER}, #{customerId,jdbcType=INTEGER}, 
+      #{preferenceId,jdbcType=INTEGER}, #{stringValue,jdbcType=VARCHAR}, #{intValue,jdbcType=INTEGER}
+      )
+  </insert>
+  <insert id="insertSelective" parameterType="com.yootii.bdy.preference.model.PreferenceValue" useGeneratedKeys="true" keyProperty="id">
+    insert into preference_value
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        id,
+      </if>
+      <if test="userId != null" >
+        userId,
+      </if>
+      <if test="customerId != null" >
+        customerId,
+      </if>
+      <if test="preferenceId != null" >
+        preferenceId,
+      </if>
+      <if test="stringValue != null" >
+        stringValue,
+      </if>
+      <if test="intValue != null" >
+        intValue,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        #{id,jdbcType=INTEGER},
+      </if>
+      <if test="userId != null" >
+        #{userId,jdbcType=INTEGER},
+      </if>
+      <if test="customerId != null" >
+        #{customerId,jdbcType=INTEGER},
+      </if>
+      <if test="preferenceId != null" >
+        #{preferenceId,jdbcType=INTEGER},
+      </if>
+      <if test="stringValue != null" >
+        #{stringValue,jdbcType=VARCHAR},
+      </if>
+      <if test="intValue != null" >
+        #{intValue,jdbcType=INTEGER},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.yootii.bdy.preference.model.PreferenceValue" >
+    update preference_value
+    <set >
+      <if test="userId != null" >
+        userId = #{userId,jdbcType=INTEGER},
+      </if>
+      <if test="customerId != null" >
+        customerId = #{customerId,jdbcType=INTEGER},
+      </if>
+      <if test="preferenceId != null" >
+        preferenceId = #{preferenceId,jdbcType=INTEGER},
+      </if>
+      <if test="stringValue != null" >
+        stringValue = #{stringValue,jdbcType=VARCHAR},
+      </if>
+      <if test="intValue != null" >
+        intValue = #{intValue,jdbcType=INTEGER},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.yootii.bdy.preference.model.PreferenceValue" >
+    update preference_value
+    set userId = #{userId,jdbcType=INTEGER},
+      customerId = #{customerId,jdbcType=INTEGER},
+      preferenceId = #{preferenceId,jdbcType=INTEGER},
+      stringValue = #{stringValue,jdbcType=VARCHAR},
+      intValue = #{intValue,jdbcType=INTEGER}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <select id="selectByPreferenceValue" resultMap="BaseResultMap">
+  	select <include refid="Base_Column_List_p"/>,pf.preferenceName,pf.description from preference_value p ,preference_field pf where 1=1
+  	  and p.preferenceId = pf.preferenceId
+  	  <if test="preferenceValue.userId  != null and preferenceValue.userId  != ''">
+	  and p.userId = #{preferenceValue.userId,jdbcType=INTEGER}
+	  </if>
+	  <if test="preferenceValue.customerId  != null and preferenceValue.customerId  != ''">
+	  and p.customerId = #{preferenceValue.customerId,jdbcType=INTEGER}
+	  </if>
+	  <if test="preferenceValue.preferenceId  != null and preferenceValue.preferenceId  != ''">
+	  and p.preferenceId = #{preferenceValue.preferenceId,jdbcType=INTEGER}
+	  </if>
+	  <bind name="gcon.offset" value="gcon.offset" />
+		<bind name="gcon.rows" value="gcon.rows" />
+		<if test="gcon.rows != null and gcon.offset != null">
+		limit #{gcon.offset,jdbcType=INTEGER}, #{gcon.rows,jdbcType=INTEGER}
+		</if>
+  </select> 
+    <select id="selectCountByPreferenceValue" resultType="java.lang.Long">
+  	select count(p.id) from preference_value p ,preference_field pf where 1=1
+  	  and p.preferenceId = pf.preferenceId
+  	  <if test="preferenceValue.userId  != null and preferenceValue.userId  != ''">
+	  and p.userId = #{preferenceValue.userId,jdbcType=INTEGER}
+	  </if>
+	  <if test="preferenceValue.customerId  != null and preferenceValue.customerId  != ''">
+	  and p.customerId = #{preferenceValue.customerId,jdbcType=INTEGER}
+	  </if>
+	  <if test="preferenceValue.preferenceId  != null and preferenceValue.preferenceId  != ''">
+	  and p.preferenceId = #{preferenceValue.preferenceId,jdbcType=INTEGER}
+	  </if>
+	  
+  </select> 
+</mapper>

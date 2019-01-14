@@ -1,0 +1,374 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.yootii.bdy.ipservice.dao.AgencyServiceMapper" >
+  <resultMap id="BaseResultMap" type="com.yootii.bdy.ipservice.model.AgencyService" >
+    <id column="agencyServiceId" property="agencyServiceId" jdbcType="INTEGER" />
+    <result column="agencyId" property="agencyId" jdbcType="INTEGER" />
+    <result column="serviceId" property="serviceId" jdbcType="INTEGER" />
+    <result column="reduction" property="reduction" jdbcType="DECIMAL" />
+    <result column="deadline" property="deadline" jdbcType="TIMESTAMP" />
+    <result column="agencyName" property="agencyName" jdbcType="VARCHAR" />
+    <result column="chargeItemId" property="chargeItemId" jdbcType="INTEGER" />
+    <association  property="platformService" javaType="com.yootii.bdy.ipservice.model.PlatformService" column="serviceId" select="getPlatformService"></association>
+  </resultMap>
+  <sql id="Base_Column_List" >
+    agencyServiceId, agencyId, serviceId, reduction, deadline, chargeItemId
+  </sql>
+  <sql id="Base_Column_List_a" >
+    a.agencyServiceId, a.agencyId, a.serviceId, ci.price, a.reduction, a.deadline, ci.currency, a.chargeItemId, d.name as agencyName
+  </sql>
+  <sql id="PlatformService_Column_List" >
+    a.serviceId, a.serviceName, a.serviceDesc, a.serviceLogo, a.caseType, a.serviceType
+  </sql>
+  
+  
+  
+  <select id="selectAgencyServiceId"  resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from agency_service
+    where chargeItemId=
+    (
+   		 select chargeItemId from charge_item c,          
+   		 (
+   		    select a.chnName, a.caseType from charge_item a, agency_service b
+		    where a.chargeItemId=b.chargeItemId
+		    and b.agencyServiceId=#{agencyService.agencyServiceId,jdbcType=INTEGER} 
+		  ) d 
+		  where  1=1
+		  and c.chnName=d.chnName  
+		  and c.caseType=d.caseType	   		 
+    	  and c.agencyId=#{agencyService.agencyId,jdbcType=INTEGER} 		 
+    )
+  </select>
+  
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select 
+    <include refid="Base_Column_List_a" />
+    from agency_service a
+    left join charge_item ci on a.chargeItemId=ci.chargeItemId
+    left join agency d on a.agencyId=d.id
+    where agencyServiceId = #{agencyServiceId,jdbcType=INTEGER}
+  </select>
+  <select id="queryByAgencyId" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select 
+    <include refid="Base_Column_List_a" />
+    from agency_service a
+    left join charge_item ci on a.chargeItemId=ci.chargeItemId
+    left join agency d on a.agencyId=d.id
+    where a.agencyId = #{agencyId,jdbcType=INTEGER}
+  </select>
+  <select id="selectByAgencyService" resultMap="BaseResultMap" >
+    select 
+    <include refid="Base_Column_List_a" />
+    from agency_service a
+    left join charge_item ci on a.chargeItemId=ci.chargeItemId
+    left join platform_service b on a.serviceId = b.serviceId
+    <if test="userId !=null">
+	    left join agency_user c on a.agencyId = c.agencyId
+	    left join agency d on a.agencyId=d.id
+		where c.userId=#{userId,jdbcType=INTEGER}
+    </if>
+    <if test="custId !=null">
+    	left join agency d on a.agencyId=d.id
+		where a.agencyId in ( select agencyId from agency_customer where custId=#{custId,jdbcType=INTEGER} and cotag=0)
+		<if test="agencyService.agencyId !=null ">
+			<bind name="agencyService.agencyId" value="agencyService.agencyId"/>
+			and a.agencyId = #{agencyService.agencyId,jdbcType=INTEGER}
+		</if>
+    </if>
+    <choose>
+	    <when test="gcon.keyword!=null and gcon.keyword!=''">
+			<bind name="gcon.keyword" value="'%' + gcon.keyword + '%'" />
+					and ( b.serviceName like #{serviceName,jdbcType=VARCHAR} )
+		</when>
+		<otherwise>
+		    <if test="serviceName!=null and serviceName!='' ">
+		    <bind name="serviceName" value="'%' + serviceName + '%'" />
+		    	and b.serviceName like #{serviceName,jdbcType=VARCHAR}
+		    </if>
+	    </otherwise>
+	 </choose>
+	 <if test="agencyService.serviceId !=null ">
+			<bind name="agencyService.serviceId" value="agencyService.serviceId"/>
+			and a.serviceId = #{agencyService.serviceId,jdbcType=INTEGER}
+	 </if>
+	 <if test="gcon.orderCol != null and gcon.orderAsc!=null">
+		<bind name="gcon.orderCol" value="gcon.orderCol" />
+		<bind name="gcon.orderAsc" value="gcon.orderAsc" />
+		order by ${gcon.orderCol} ${gcon.orderAsc}				
+	</if>
+	<bind name="gcon.offset" value="gcon.offset" />
+	<bind name="gcon.rows" value="gcon.rows" />
+	limit #{gcon.offset,jdbcType=INTEGER}, #{gcon.rows,jdbcType=INTEGER}
+  </select>
+  <select id="selectByAgencyServiceCount" resultType="java.lang.Long" >
+    select count(*) as count
+    from agency_service a
+    left join charge_item ci on a.chargeItemId=ci.chargeItemId
+    left join platform_service b on a.serviceId = b.serviceId
+    <if test="userId !=null">
+	    left join agency_user c on a.agencyId = c.agencyId
+	    left join agency d on a.agencyId=d.id
+		where c.userId=#{userId,jdbcType=INTEGER}
+    </if>
+    <if test="custId !=null">
+    	left join agency d on a.agencyId=d.id
+		where a.agencyId in ( select agencyId from agency_customer where custId=#{custId,jdbcType=INTEGER} and cotag=0)
+		<if test="agencyService.agencyId !=null ">
+			<bind name="agencyService.agencyId" value="agencyService.agencyId"/>
+			and a.agencyId = #{agencyService.agencyId,jdbcType=INTEGER}
+		</if>
+    </if>
+    <choose>
+	    <when test="gcon.keyword!=null and gcon.keyword!=''">
+			<bind name="gcon.keyword" value="'%' + gcon.keyword + '%'" />
+					and ( b.serviceName like #{serviceName,jdbcType=VARCHAR} )
+		</when>
+		<otherwise>
+		    <if test="serviceName!=null and serviceName!='' ">
+		    <bind name="serviceName" value="'%' + serviceName + '%'" />
+		    	and b.serviceName like #{serviceName,jdbcType=VARCHAR}
+		    </if>
+	    </otherwise>
+	 </choose>
+	 <if test="agencyService.serviceId !=null ">
+			<bind name="agencyService.serviceId" value="agencyService.serviceId"/>
+			and a.serviceId = #{agencyService.serviceId,jdbcType=INTEGER}
+	 </if>
+  </select>
+  <select id="selectByCustId" resultType="java.util.Map" >
+    select a.agencyId,d.name,d.logo
+    from agency_service a
+    left join platform_service b on a.serviceId = b.serviceId
+    left join platform_service c on b.parent = c.serviceId
+    <if test="custId !=null">
+    	left join agency d on a.agencyId=d.id
+		where a.agencyId in ( select agencyId from agency_customer where custId=#{custId,jdbcType=INTEGER} and cotag=0)
+		<if test="agencyService.agencyId !=null ">
+			<bind name="agencyService.agencyId" value="agencyService.agencyId"/>
+			and a.agencyId = #{agencyService.agencyId,jdbcType=INTEGER}
+		</if>
+    </if>
+	 <if test="agencyService.serviceId !=null ">
+			<bind name="agencyService.serviceId" value="agencyService.serviceId"/>
+			and c.serviceId = #{agencyService.serviceId,jdbcType=INTEGER}
+	 </if>
+	 group by a.agencyId, d.name, d.logo
+  </select>
+  
+  <select id="selectByCustIdCount" resultType="java.lang.Long" >
+    select count(*) as count from (
+    select a.agencyId,d.name, d.logo
+    from agency_service a
+    left join platform_service b on a.serviceId = b.serviceId
+    left join platform_service c on b.parent = c.serviceId
+    <if test="custId !=null">
+    	left join agency d on a.agencyId=d.id
+		where a.agencyId in ( select agencyId from agency_customer where custId=#{custId,jdbcType=INTEGER} and cotag=0)
+		<if test="agencyService.agencyId !=null ">
+			<bind name="agencyService.agencyId" value="agencyService.agencyId"/>
+			and a.agencyId = #{agencyService.agencyId,jdbcType=INTEGER}
+		</if>
+    </if>
+	 <if test="agencyService.serviceId !=null ">
+			<bind name="agencyService.serviceId" value="agencyService.serviceId"/>
+			and c.serviceId = #{agencyService.serviceId,jdbcType=INTEGER}
+	 </if>
+	 group by a.agencyId,d.name, d.logo
+	 ) a
+  </select>
+  <select id="selectByAgencyId" resultType="java.util.Map" >
+    select a.agencyServiceId, a.agencyId, a.serviceId, ci.price, a.reduction, a.deadline, ci.currency, a.chargeItemId, 
+    b.serviceId,b.serviceName,b.serviceDesc,b.serviceLogo,b.parent,b.serviceType
+    from agency_service a
+    left join charge_item ci on a.chargeItemId=ci.chargeItemId
+    left join platform_service b on a.serviceId = b.serviceId
+    left join platform_service c on b.parent = c.serviceId
+	<if test="agencyId !=null ">
+		where a.agencyId = #{agencyId,jdbcType=INTEGER}
+	</if>
+	 <if test="agencyService.serviceId !=null ">
+			<bind name="agencyService.serviceId" value="agencyService.serviceId"/>
+			and c.serviceId = #{agencyService.serviceId,jdbcType=INTEGER}
+	 </if>
+  </select>
+  
+  <select id="getPlatformService" resultType="com.yootii.bdy.ipservice.model.PlatformService" parameterType="java.lang.Integer" >
+    select a.serviceId, a.serviceName, a.serviceDesc, a.serviceLogo, a.caseType, a.serviceType, b.caseTypeId
+    from platform_service a, trademark_case_type b
+    where 
+    1=1
+    and a.serviceId = #{serviceId,jdbcType=INTEGER}
+    and a.caseType=b.caseType
+  </select>
+  <select id="selectAgencyService" resultType="java.util.Map">
+    select a.agencyServiceId, a.serviceId, a.agencyId, ci.price, a.reduction, a.deadline, ci.currency, a.chargeItemId
+    ,c.casetype, c.caseTypeId, d.name agencyName
+    from agency_service a
+    left join charge_item ci on a.chargeItemId=ci.chargeItemId
+    left join platform_service b on a.serviceId = b.serviceId
+    left join trademark_case_type c on c.casetype= b.caseType
+    left join agency d on a.agencyId=d.id
+    where a.agencyId = #{agencyId,jdbcType=INTEGER} 
+    and b.serviceType=#{serviceType,jdbcType=INTEGER} 
+    and c.caseTypeId = #{caseTypeId,jdbcType=INTEGER}
+    limit 1
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
+    delete from agency_service
+    where agencyServiceId = #{agencyServiceId,jdbcType=INTEGER}
+  </delete>
+  <delete id="deleteByAgencyService" parameterType="com.yootii.bdy.ipservice.model.AgencyService" >
+    delete from agency_service
+    where agencyServiceId = #{agencyServiceId,jdbcType=INTEGER}
+    and agencyId = #{agencyId,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.yootii.bdy.ipservice.model.AgencyService" >
+    insert into agency_service (agencyServiceId, agencyId, serviceId, 
+      reduction, deadline, chargeItemId)
+    values (#{agencyServiceId,jdbcType=INTEGER}, #{agencyId,jdbcType=INTEGER}, #{serviceId,jdbcType=INTEGER}, 
+      #{reduction,jdbcType=DECIMAL}, #{deadline,jdbcType=TIMESTAMP},#{chargeItemId,jdbcType=INTEGER}
+     
+  </insert>
+  <insert id="insertSelective" parameterType="com.yootii.bdy.ipservice.model.AgencyService" useGeneratedKeys="true" keyProperty="agencyServiceId">
+    insert into agency_service
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="agencyServiceId != null" >
+        agencyServiceId,
+      </if>
+      <if test="agencyId != null" >
+        agencyId,
+      </if>
+      <if test="serviceId != null" >
+        serviceId,
+      </if>
+      <if test="reduction != null" >
+        reduction,
+      </if>
+      <if test="deadline != null" >
+        deadline,
+      </if>
+      <if test="chargeItemId != null" >
+        chargeItemId,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="agencyServiceId != null" >
+        #{agencyServiceId,jdbcType=INTEGER},
+      </if>
+      <if test="agencyId != null" >
+        #{agencyId,jdbcType=INTEGER},
+      </if>
+      <if test="serviceId != null" >
+        #{serviceId,jdbcType=INTEGER},
+      </if>
+      <if test="reduction != null" >
+        #{reduction,jdbcType=DECIMAL},
+      </if>
+      <if test="deadline != null" >
+        #{deadline,jdbcType=TIMESTAMP},
+      </if> 
+      <if test="chargeItemId != null" >
+        #{chargeItemId,jdbcType=INTEGER},
+      </if>
+    </trim>
+  </insert>
+  <!-- <insert id="insertSelectiveWithUserId" >
+    insert into agency_service
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="record.agencyServiceId != null" >
+        agencyServiceId,
+      </if>
+      <if test="record.agencyId != null" >
+        agencyId,
+      </if>
+      <if test="record.serviceId != null" >
+        serviceId,
+      </if>
+      <if test="record.price != null" >
+        price,
+      </if>
+      <if test="record.reduction != null" >
+        reduction,
+      </if>
+      <if test="record.deadline != null" >
+        deadline,
+      </if>     
+      <if test="currency != null" >
+        currency = #{currency,jdbcType=VARCHAR},
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="record.agencyServiceId != null" >
+        #{record.agencyServiceId,jdbcType=INTEGER},
+      </if>
+      <if test="record.agencyId != null" >
+        (select agencyId from agency_user where userId = #{userId,jdbcType=INTEGER} limit 1),
+      </if>
+      <if test="record.serviceId != null" >
+        #{record.serviceId,jdbcType=INTEGER},
+      </if>
+      <if test="record.price != null" >
+        #{record.price,jdbcType=DECIMAL},
+      </if>
+      <if test="record.reduction != null" >
+        #{record.reduction,jdbcType=DECIMAL},
+      </if>
+      <if test="deadline != null" >
+        #{record.deadline,jdbcType=TIMESTAMP},
+      </if>
+      <if test="currency != null" >
+        #{record.currency,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert> -->
+  <update id="updateByPrimaryKeySelective" parameterType="com.yootii.bdy.ipservice.model.AgencyService" >
+    update agency_service
+    <set >
+      <if test="agencyId != null" >
+        agencyId = #{agencyId,jdbcType=INTEGER},
+      </if>
+      <if test="serviceId != null" >
+        serviceId = #{serviceId,jdbcType=INTEGER},
+      </if>
+      <if test="reduction != null" >
+        reduction = #{reduction,jdbcType=DECIMAL},
+      </if>
+      <if test="deadline != null" >
+        deadline = #{deadline,jdbcType=TIMESTAMP},
+      </if>
+      <if test="chargeItemId != null" >
+        #{chargeItemId,jdbcType=INTEGER},
+      </if>
+    </set>
+    where agencyServiceId = #{agencyServiceId,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKeyAndAgencyId" parameterType="com.yootii.bdy.ipservice.model.AgencyService" >
+    update agency_service
+    <set >
+      <if test="serviceId != null" >
+        serviceId = #{serviceId,jdbcType=INTEGER},
+      </if>
+      <if test="reduction != null" >
+        reduction = #{reduction,jdbcType=DECIMAL},
+      </if>
+      <if test="deadline != null" >
+        deadline = #{deadline,jdbcType=TIMESTAMP},
+      </if>
+      <if test="chargeItemId != null" >
+        chargeItemId = #{chargeItemId,jdbcType=INTEGER},
+      </if>
+    </set>
+    where agencyServiceId = #{agencyServiceId,jdbcType=INTEGER} and agencyId = #{agencyId,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.yootii.bdy.ipservice.model.AgencyService" >
+    update agency_service
+    set agencyId = #{agencyId,jdbcType=INTEGER},
+      serviceId = #{serviceId,jdbcType=INTEGER},
+      reduction = #{reduction,jdbcType=DECIMAL},
+      deadline = #{deadline,jdbcType=TIMESTAMP},
+      chargeItemId = #{chargeItemId,jdbcType=INTEGER}
+    where agencyServiceId = #{agencyServiceId,jdbcType=INTEGER}
+  </update>
+</mapper>

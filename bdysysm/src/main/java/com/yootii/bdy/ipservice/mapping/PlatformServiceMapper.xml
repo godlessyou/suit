@@ -1,0 +1,232 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.yootii.bdy.ipservice.dao.PlatformServiceMapper" >
+  <resultMap id="BaseResultMap" type="com.yootii.bdy.ipservice.model.PlatformService" >
+    <id column="serviceId" property="serviceId" jdbcType="INTEGER" />
+    <result column="serviceName" property="serviceName" jdbcType="VARCHAR" />
+    <result column="serviceDesc" property="serviceDesc" jdbcType="VARCHAR" />
+    <result column="serviceLogo" property="serviceLogo" jdbcType="VARCHAR" />
+    <result column="caseType" property="caseType" jdbcType="VARCHAR" />
+    <result column="parent" property="parent" jdbcType="INTEGER" />
+    <result column="serviceType" property="serviceType" jdbcType="INTEGER"/>
+    <result column="caseTypeId" property="caseTypeId" jdbcType="INTEGER"/>
+  </resultMap>
+  <sql id="Base_Column_List" >
+    serviceId, serviceName, serviceDesc, serviceLogo, parent, caseType,serviceType
+  </sql>
+  <sql id="Base_Column_List_a" >
+    a.serviceId, a.serviceName, a.serviceDesc, a.serviceLogo, a.parent, a.caseType
+  </sql>
+  <sql id="Base_Column_List_b" >
+    a.serviceId, a.serviceName, a.serviceDesc, a.serviceLogo, a.parent, a.caseType,serviceType,
+    c.caseTypeId
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select 
+    <include refid="Base_Column_List" />
+    from platform_service
+    where serviceId = #{serviceId,jdbcType=INTEGER}
+  </select>
+  <select id="selectByPlatformService" resultMap="BaseResultMap" >
+    select 
+    <include refid="Base_Column_List_b" />
+    from platform_service a
+    LEFT JOIN trademark_case_type c ON a.caseType = c.caseType
+    where 1=1
+    <choose>
+		<when test="gcon.keyword!=null and gcon.keyword!=''">
+			<bind name="gcon.keyword" value="'%' + gcon.keyword + '%'" />
+			and (
+			serviceName like #{gcon.keyword,jdbcType=VARCHAR} or
+			serviceDesc like #{gcon.keyword,jdbcType=VARCHAR} )
+		</when>
+		<otherwise>
+			<if test="platformService.serviceName!=null and platformService.serviceName!=''">
+				<bind name="platformService.serviceName" value="'%' + platformService.serviceName + '%'" />
+				and serviceName like #{platformService.serviceName,jdbcType=VARCHAR}
+			</if>
+			<if test="platformService.serviceDesc!=null and platformService.serviceDesc!=''">
+				<bind name="platformService.serviceDesc" value="'%'+platformService.serviceDesc+'%'" />
+				and serviceDesc like #{platformService.serviceDesc,jdbcType=VARCHAR}
+			</if>
+		</otherwise>
+	</choose>
+	<if test="platformService.parent != null">
+		<bind name="platformService.parent" value="platformService.parent" />
+		and a.parent = #{platformService.parent}		
+	</if>
+	<if test="gcon.orderCol != null and gcon.orderAsc!=null">
+		<bind name="gcon.orderCol" value="gcon.orderCol" />
+		<bind name="gcon.orderAsc" value="gcon.orderAsc" />
+		order by ${gcon.orderCol} ${gcon.orderAsc}				
+	</if>
+	 
+	<bind name="gcon.offset" value="gcon.offset" />
+	<bind name="gcon.rows" value="gcon.rows" />
+	limit #{gcon.offset,jdbcType=INTEGER}, #{gcon.rows,jdbcType=INTEGER}
+  </select>
+  
+  <select id="selectByPlatformServiceCount" resultType="java.lang.Long" >
+    select count(*) as count
+    from platform_service a
+    LEFT JOIN trademark_case_type c ON a.caseType = c.caseType
+    where 1=1
+    <choose>
+		<when test="gcon.keyword!=null and gcon.keyword!=''">
+			<bind name="gcon.keyword" value="'%' + gcon.keyword + '%'" />
+			and (
+			serviceName like #{gcon.keyword,jdbcType=VARCHAR} or
+			serviceDesc like #{gcon.keyword,jdbcType=VARCHAR} )
+		</when>
+		<otherwise>
+			<if test="platformService.serviceName!=null and platformService.serviceName!=''">
+				<bind name="platformService.serviceName" value="'%' + platformService.serviceName + '%'" />
+				and serviceName like #{platformService.serviceName,jdbcType=VARCHAR}
+			</if>
+			<if test="platformService.serviceDesc!=null and platformService.serviceDesc!=''">
+				<bind name="platformService.serviceDesc" value="'%'+platformService.serviceDesc+'%'" />
+				and serviceDesc like #{platformService.serviceDesc,jdbcType=VARCHAR}
+			</if>
+		</otherwise>
+	</choose>
+	<if test="platformService.parent != null">
+		<bind name="platformService.parent" value="platformService.parent" />
+		and a.parent = #{platformService.parent}		
+	</if>
+  </select>
+  
+  
+  <select id="queryPlatformService" resultMap="BaseResultMap" parameterType="java.lang.Integer">
+    select 
+    <include refid="Base_Column_List" />
+    from platform_service
+    where parent = #{parent,jdbcType=INTEGER}
+  </select>
+  <select id="queryPlatformServiceByCaseTypeIdAndServiceType" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List_a" />
+    from platform_service a
+	left join trademark_case_type b on a.caseType = b.caseType
+	where b.caseTypeId = #{caseTypeId,jdbcType=INTEGER} 
+	and a.serviceType = #{serviceType,jdbcType=INTEGER}
+  </select>
+  <select id="selectByCaseTypeIdAndParent" resultType="java.lang.Integer">
+    select a.serviceId
+    from platform_service a
+	left join trademark_case_type b on a.caseType = b.caseType
+	where b.caseTypeId = #{caseTypeId,jdbcType=INTEGER} 
+	and a.parent = 0
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
+    delete from platform_service
+    where serviceId = #{serviceId,jdbcType=INTEGER}
+  </delete>
+  
+  
+  <insert id="insert" parameterType="com.yootii.bdy.ipservice.model.PlatformService" >
+    insert into platform_service 
+     ( 
+       serviceName,
+       serviceDesc, 
+       serviceLogo, 
+       parent,
+       caseType,
+       serviceType
+      )
+    values
+     (
+      #{serviceName,jdbcType=VARCHAR}, 
+      #{serviceDesc,jdbcType=VARCHAR}, 
+      #{serviceLogo,jdbcType=VARCHAR}, 
+      #{parent,jdbcType=INTEGER}, 
+      #{caseType,jdbcType=VARCHAR},
+      #{serviceType,jdbcType=INTEGER}
+      )
+  </insert>
+  
+  <!-- 插入父节点  -->
+  <insert id="insertSelective" parameterType="com.yootii.bdy.ipservice.model.PlatformService" useGeneratedKeys="true" keyProperty="serviceId">
+    insert into platform_service
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="serviceId != null" >
+        serviceId,
+      </if>
+      <if test="serviceName != null" >
+        serviceName,
+      </if>
+      <if test="serviceDesc != null" >
+        serviceDesc,
+      </if>
+      <if test="serviceLogo != null" >
+        serviceLogo,
+      </if>
+      <if test="parent != null" >
+        parent,
+      </if>
+      <if test="caseType != null" >
+        caseType,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="serviceId != null" >
+        #{serviceId,jdbcType=INTEGER},
+      </if>
+      <!-- 父节点的serviceName 值和caseType的值是一样的 -->
+      <if test="serviceName != null" >
+        #{caseType,jdbcType=VARCHAR},
+      </if>
+      <if test="serviceDesc != null" >
+        #{serviceDesc,jdbcType=VARCHAR},
+      </if>
+      <if test="serviceLogo != null" >
+        #{serviceLogo,jdbcType=VARCHAR},
+      </if>
+      <if test="parent != null" >
+        #{parent,jdbcType=INTEGER},
+      </if>
+      <if test="caseType != null" >
+        #{caseType,jdbcType=INTEGER},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.yootii.bdy.ipservice.model.PlatformService" >
+    update platform_service
+    <set >
+      <if test="serviceName != null" >
+        serviceName = #{serviceName,jdbcType=VARCHAR},
+      </if>
+      <if test="serviceDesc != null" >
+        serviceDesc = #{serviceDesc,jdbcType=VARCHAR},
+      </if>
+      <if test="serviceLogo != null" >
+        serviceLogo = #{serviceLogo,jdbcType=VARCHAR},
+      </if>
+      <if test="parent != null" >
+        parent = #{parent,jdbcType=VARCHAR},
+      </if>
+      <if test="caseType != null" >
+        caseType = #{caseType,jdbcType=INTEGER},
+      </if>
+    </set>
+    where serviceId = #{serviceId,jdbcType=INTEGER}
+  </update>
+	  <update id="updateByPrimaryKey" parameterType="com.yootii.bdy.ipservice.model.PlatformService" >
+	    update platform_service
+	    set serviceName = #{serviceName,jdbcType=VARCHAR},
+	      serviceDesc = #{serviceDesc,jdbcType=VARCHAR},
+	      serviceLogo = #{serviceLogo,jdbcType=VARCHAR},
+	      parent = #{parent,jdbcType=VARCHAR},
+	      caseType = #{caseType,jdbcType=INTEGER}
+	    where serviceId = #{serviceId,jdbcType=INTEGER}
+	  </update>
+  		<!-- 修改服务的log -->
+	  <update id="upLoad" parameterType="com.yootii.bdy.ipservice.model.PlatformService">
+	  		UPDATE platform_service SET
+	  		serviceLogo = #{serviceLogo,jdbcType=VARCHAR}
+	  		where serviceId = #{serviceId,jdbcType=INTEGER}
+	  </update>
+  
+  		<select id="selectById" resultType="com.yootii.bdy.ipservice.model.PlatformService">
+  			SELECT * FROM platform_service WHERE serviceId = #{id}
+  		</select>
+</mapper>

@@ -1,0 +1,526 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.yootii.bdy.agency.dao.AgencyMapper" >
+  <resultMap id="BaseResultMap" type="com.yootii.bdy.agency.model.Agency" >
+    <id column="id" property="id" jdbcType="INTEGER" />
+    <result column="name" property="name" jdbcType="VARCHAR" />
+    <result column="address" property="address" jdbcType="VARCHAR" />
+    <result column="tel" property="tel" jdbcType="VARCHAR" />
+    <result column="logo" property="logo" jdbcType="VARCHAR" />
+    <result column="status" property="status" jdbcType="VARCHAR" />
+    <result column="fax" property="fax" jdbcType="VARCHAR" />
+    <result column="postcode" property="postcode" jdbcType="VARCHAR" />
+    <result column="level" property="level" jdbcType="INTEGER" />
+    <result column="appOnline" property="appOnline" jdbcType="INTEGER" />
+    <result column="appChannel" property="appChannel" jdbcType="INTEGER" />    
+  </resultMap>
+  <resultMap id="RetuenAmount" type="com.yootii.bdy.agency.model.RetuenAmount" >
+    <id column="custAmount" property="custAmount" jdbcType="BIGINT" />
+    <id column="agencyAmount" property="agencyAmount" jdbcType="BIGINT" />
+    
+  </resultMap>
+ <resultMap id="BaseResultMap1" type="com.yootii.bdy.agency.model.Agency">
+ 	<id column="id" property="id" jdbcType="INTEGER" />
+    <result column="name" property="name" jdbcType="VARCHAR" />
+    <result column="address" property="address" jdbcType="VARCHAR" />
+    <result column="tel" property="tel" jdbcType="VARCHAR" />
+    <result column="logo" property="logo" jdbcType="VARCHAR" />
+    <result column="status" property="status" jdbcType="VARCHAR" />
+    <result column="postcode" property="postcode" jdbcType="VARCHAR" />
+    <result column="level" property="level" jdbcType="INTEGER" />
+    <result column="appOnline" property="appOnline" jdbcType="INTEGER" />
+    <result column="appChannel" property="appChannel" jdbcType="INTEGER" />
+    <association property="channelName" column="appChannel" javaType="String" select="selectAgencyName"> </association>
+ 
+  <!--   <collection property="materialFile" javaType="java.util.List" ofType="com.yootii.bdy.material.model.MaterialFile">
+	     <id column="fileId" property="fileId" jdbcType="INTEGER" />
+	    <result column="materialId" property="materialId" jdbcType="INTEGER" />
+	    <result column="fileName" property="fileName" jdbcType="VARCHAR" />
+	    <result column="fileUrl" property="fileUrl" jdbcType="VARCHAR" />
+	    <result column="userName" property="userName" jdbcType="VARCHAR" />
+	    <result column="modifyTime" property="modifyTime" jdbcType="TIMESTAMP" />
+    </collection> -->
+    <collection property="cooperationAgency" javaType="java.util.List" ofType="com.yootii.bdy.agency.model.Agency">
+    	 <id column="cid" property="id" jdbcType="INTEGER" />
+	    <result column="cname" property="name" jdbcType="VARCHAR" />
+	    <result column="caddress" property="address" jdbcType="VARCHAR" />
+	    <result column="ctel" property="tel" jdbcType="VARCHAR" />
+	    <result column="clogo" property="logo" jdbcType="VARCHAR" />
+	    <result column="cstatus" property="status" jdbcType="VARCHAR" />
+	    <result column="cpostcode" property="postcode" jdbcType="VARCHAR" />
+    	<result column="clevel" property="level" jdbcType="INTEGER" />    	
+    </collection>
+    <collection property="agencyCustomer" javaType="java.util.List" ofType="com.yootii.bdy.customer.model.Customer">
+    	 <id column="bid" property="id" jdbcType="INTEGER" />
+	    <result column="bname" property="name" jdbcType="VARCHAR" />
+	    <result column="country" property="country" jdbcType="VARCHAR" />
+	    <result column="level" property="level" jdbcType="INTEGER" />
+	    <result column="source" property="source" jdbcType="INTEGER" />
+	    <result column="custType" property="custType" jdbcType="INTEGER" />
+	    <result column="username" property="username" jdbcType="VARCHAR" />
+	    <result column="password" property="password" jdbcType="VARCHAR" />
+	    <result column="fullname" property="fullname" jdbcType="VARCHAR" />
+	    <result column="email" property="email" jdbcType="VARCHAR" />
+	    <result column="phone" property="phone" jdbcType="VARCHAR" />
+	    <result column="sex" property="sex" jdbcType="VARCHAR" />
+	    <result column="userType" property="userType" jdbcType="INTEGER" />
+	    <result column="locked" property="locked" jdbcType="INTEGER" />
+	    <result column="validDate" property="validDate" jdbcType="TIMESTAMP" />
+	    <result column="validataCode" property="validataCode" jdbcType="CHAR" />
+	    <result column="userIcon" property="userIcon" jdbcType="LONGVARCHAR" />
+    </collection>
+    </resultMap>
+   <resultMap id="BaseResultMap2" type="com.yootii.bdy.agency.model.Agency" >
+    <id column="id" property="id" jdbcType="INTEGER" />
+    <result column="name" property="name" jdbcType="VARCHAR" />
+    <result column="address" property="address" jdbcType="VARCHAR" />
+    <result column="tel" property="tel" jdbcType="VARCHAR" />
+    <result column="logo" property="logo" jdbcType="VARCHAR" />
+    <result column="status" property="status" jdbcType="VARCHAR" />
+    <result column="postcode" property="postcode" jdbcType="VARCHAR" />
+    <result column="level" property="level" jdbcType="INTEGER" />
+    <result column="appOnline" property="appOnline" jdbcType="INTEGER" />
+    <result column="appChannel" property="appChannel" jdbcType="INTEGER" />
+    <collection property="agencyCustomer" ofType="com.yootii.bdy.customer.model.Customer" column="id" select="getAgencyCustomer"></collection>
+    <collection property="cooperationAgency" ofType="com.yootii.bdy.agency.model.Agency" column="id" select="getCooperationAgency"></collection>
+  </resultMap>
+ 
+  <sql id="Base_Column_List" >
+    id, name, address, tel, logo, status, postcode, level, appOnline, appChannel
+  </sql>
+  <sql id="Base_Column_List_a" >
+    a.id, a.name, a.address, a.tel, a.logo, a.status,a.fax,a.postcode, a.level, a.appOnline, a.appChannel
+  </sql>
+   <sql id="Base_Column_List_b" >
+    b.id as cid, b.name as cname, b.address as cadress, b.tel as ctel, b.logo as clogo, b.status as cstatus, b.postcode as cpostcode , b.level as clevel
+  </sql>
+  <sql id="Base_Column_List_mf" >
+    mf.fileId, mf.materialId, mf.fileName, mf.fileUrl, mf.userName, mf.modifyTime
+  </sql>
+   <sql id="Base_Column_List_c" >
+    c.id as bid, c.name as bname, c.country, c.level, c.source, c.custType, c.username, c.password, c.fullname, c.email, 
+    c.phone, c.sex, c.userType, c.locked, c.validDate, c.validataCode,	c.userIcon
+  </sql>
+  
+  
+  <select id="selectAgencyName" resultType="java.lang.String" parameterType="java.lang.Integer" >
+    select  name
+    from agency
+    where id = #{appChannel,jdbcType=INTEGER}
+  </select>
+  
+   
+  <select id="selectAppChannel" resultMap="BaseResultMap"  >
+    select id,  name 
+    from agency
+    where 
+    1=1
+    and appOnline=1 
+    and appChannel is not null
+  </select>
+  
+  
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select 
+    <include refid="Base_Column_List" />
+    from agency
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
+    delete from agency
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.yootii.bdy.agency.model.Agency" >
+    insert into agency (id, name, address, 
+      tel, logo, status, postcode, level, appOnline)
+    values (#{id,jdbcType=INTEGER}, #{name,jdbcType=VARCHAR}, #{address,jdbcType=VARCHAR}, 
+      #{tel,jdbcType=VARCHAR}, #{logo,jdbcType=VARCHAR}, #{status,jdbcType=VARCHAR}, #{postcode,jdbcType=VARCHAR}, 
+      #{level,jdbcType=INTEGER}, #{appOnline,jdbcType=INTEGER}, #{appChannel,jdbcType=INTEGER})
+  </insert>
+  <insert id="insertSelective" parameterType="com.yootii.bdy.agency.model.Agency" useGeneratedKeys="true" keyProperty="id">
+    insert into agency
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        id,
+      </if>
+      <if test="name != null" >
+        name,
+      </if>
+      <if test="address != null" >
+        address,
+      </if>
+      <if test="tel != null" >
+        tel,
+      </if>
+      <if test="logo != null" >
+        logo,
+      </if>
+      <if test="status != null" >
+        status,
+      </if>
+      <if test="fax != null" >
+        fax,
+      </if>
+      <if test="postcode != null" >
+        postcode,
+      </if>
+      <if test="level != null" >
+        level,
+      </if>
+      <if test="appOnline != null" >
+        appOnline,
+      </if>
+      <if test="appChannel != null" >
+        appChannel,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        #{id,jdbcType=INTEGER},
+      </if>
+      <if test="name != null" >
+        #{name,jdbcType=VARCHAR},
+      </if>
+      <if test="address != null" >
+        #{address,jdbcType=VARCHAR},
+      </if>
+      <if test="tel != null" >
+        #{tel,jdbcType=VARCHAR},
+      </if>
+      <if test="logo != null" >
+        #{logo,jdbcType=VARCHAR},
+      </if>
+      <if test="status != null" >
+        #{status,jdbcType=VARCHAR},
+      </if>
+      <if test="fax != null" >
+        #{fax,jdbcType=VARCHAR},
+      </if>
+      <if test="postcode != null" >
+        #{postcode,jdbcType=VARCHAR},
+      </if>
+      <if test="level != null" >
+        #{level,jdbcType=INTEGER},
+      </if>
+      <if test="appOnline != null" >
+        #{appOnline,jdbcType=INTEGER},
+      </if>
+      <if test="appChannel != null" >
+        #{appChannel,jdbcType=INTEGER},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.yootii.bdy.agency.model.Agency" >
+    update agency
+    <set >
+      <if test="name != null" >
+        name = #{name,jdbcType=VARCHAR},
+      </if>
+      <if test="address != null" >
+        address = #{address,jdbcType=VARCHAR},
+      </if>
+      <if test="tel != null" >
+        tel = #{tel,jdbcType=VARCHAR},
+      </if>
+      <if test="logo != null" >
+        logo = #{logo,jdbcType=VARCHAR},
+      </if>
+      <if test="status != null" >
+        status = #{status,jdbcType=VARCHAR},
+      </if>
+      <if test="fax != null" >
+        fax = #{fax,jdbcType=VARCHAR},
+      </if>
+      <if test="postcode != null" >
+        postcode = #{postcode,jdbcType=VARCHAR},
+      </if>
+      <if test="level != null" >
+        level = #{level,jdbcType=INTEGER},
+      </if>
+      <if test="appOnline != null" >
+        appOnline = #{appOnline,jdbcType=INTEGER},
+      </if>
+      <if test="appChannel != null" >
+        appChannel = #{appChannel,jdbcType=INTEGER},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.yootii.bdy.agency.model.Agency" >
+    update agency
+    set name = #{name,jdbcType=VARCHAR},
+      address = #{address,jdbcType=VARCHAR},
+      tel = #{tel,jdbcType=VARCHAR},
+      logo = #{logo,jdbcType=VARCHAR},
+      status = #{status,jdbcType=VARCHAR},
+      postcode = #{postcode,jdbcType=VARCHAR},
+      level = #{level,jdbcType=INTEGER},
+      appOnline = #{level,jdbcType=INTEGER},
+      appChannel = #{level,jdbcType=INTEGER}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <select id="selectByAgencySimple" resultMap="BaseResultMap">
+  select <include refid="Base_Column_List_a"/>
+  from agency a where 1=1
+  <choose>
+	   		<when test="gcon.keyword!=null and gcon.keyword!=''">
+			<bind name="gcon.keyword" value="'%' + gcon.keyword + '%'" />
+			and (a.name like #{gcon.keyword,jdbcType=VARCHAR}
+			
+			or a.address like #{gcon.keyword,jdbcType=VARCHAR}
+			
+			or a.tel like #{gcon.keyword,jdbcType=VARCHAR})
+		
+			</when> 
+			
+		<otherwise>
+			<if test="agency.name!=null and agency.name!=''">
+				<bind name="agency.name" value="'%' + agency.name + '%'" />
+				and a.name like #{agency.name,jdbcType=VARCHAR}
+			</if>
+			<if test="agency.address!=null and agency.address!=''">
+				<bind name="agency.address" value="'%' + agency.address + '%'" />
+				and a.address like #{agency.address,jdbcType=VARCHAR}
+			</if>
+			<if test="agency.tel!=null and agency.tel!=''">
+				<bind name="agency.tel" value="'%' + agency.tel + '%'" />
+				and a.tel like #{agency.tel,jdbcType=VARCHAR}
+			</if>
+			
+			</otherwise>
+		</choose>
+		<if test="agency.status!=null and agency.status!=''">
+				<bind name="agency.status" value="agency.status " />
+				and a.status = #{agency.status,jdbcType=VARCHAR}
+		</if>
+		<bind name="gcon.offset" value="gcon.offset" /> 
+		<bind name="gcon.rows" value="gcon.rows" /> 
+		<if test="gcon.rows != null and gcon.offset != null">
+		limit #{gcon.offset,jdbcType=INTEGER}, #{gcon.rows,jdbcType=INTEGER}
+		</if>
+  </select>
+  <select id="selectCountByAgencySimple" resultType="java.lang.Long">
+  select count(a.id)
+  from agency a where 1=1
+  <choose>
+	   		<when test="gcon.keyword!=null and gcon.keyword!=''">
+			<bind name="gcon.keyword" value="'%' + gcon.keyword + '%'" />
+			and (a.name like #{gcon.keyword,jdbcType=VARCHAR}
+			
+			or a.address like #{gcon.keyword,jdbcType=VARCHAR}
+			
+			or a.tel like #{gcon.keyword,jdbcType=VARCHAR})
+			</when> 
+			
+		<otherwise>
+			<if test="agency.name!=null and agency.name!=''">
+				<bind name="agency.name" value="'%' + agency.name + '%'" />
+				and a.name like #{agency.name,jdbcType=VARCHAR}
+			</if>
+			<if test="agency.address!=null and agency.address!=''">
+				<bind name="agency.address" value="'%' + agency.address + '%'" />
+				and a.address like #{agency.address,jdbcType=VARCHAR}
+			</if>
+			<if test="agency.tel!=null and agency.tel!=''">
+				<bind name="agency.tel" value="'%' + agency.tel + '%'" />
+				and a.tel like #{agency.tel,jdbcType=VARCHAR}
+			</if>
+			
+			</otherwise>
+		</choose>
+		<if test="agency.status!=null and agency.status!=''">
+				<bind name="agency.status" value="agency.status " />
+				and a.status = #{agency.status,jdbcType=VARCHAR}
+		</if>
+		<bind name="gcon.offset" value="gcon.offset" /> 
+		<bind name="gcon.rows" value="gcon.rows" /> 
+		<if test="gcon.rows != null and gcon.offset != null">
+		limit #{gcon.offset,jdbcType=INTEGER}, #{gcon.rows,jdbcType=INTEGER}
+		</if>
+  </select>
+  <select id="selectAgencyDetail" resultMap="BaseResultMap1" parameterType="java.lang.Integer">
+  
+	SELECT <include refid="Base_Column_List_a"/> ,
+		   
+		   <include refid="Base_Column_List_b"/>,
+		   <include refid="Base_Column_List_c"/>
+	FROM agency a 
+		       LEFT JOIN cooperation_agency ca ON a.id=ca.agencyId
+		       LEFT JOIN agency b ON ca.cooperationAgencyId=b.id
+		       LEFT JOIN agency_customer ac ON a.id=ac.agencyId	
+		       LEFT JOIN customer c ON ac.custId=c.id
+		       where a.id = #{id,jdbcType=INTEGER}
+  
+  </select>
+  <select id="checkName" resultType="java.lang.Integer" >
+	select count(id) from agency a where a.name = #{agency.name,jdbcType=VARCHAR}  
+	<if test="agency.id!=null and agency.id!=''">
+	and a.id !=#{agency.id,jdbcType=INTEGER}
+	</if>
+  
+  </select>
+  <select id="selectAgencyList" resultMap="BaseResultMap2">
+  SELECT <include refid="Base_Column_List_a"/> <!-- ,
+		  
+		   <include refid="Base_Column_List_b"/>,
+		   <include refid="Base_Column_List_c"/> -->
+	FROM agency a 
+		       <!-- LEFT JOIN cooperation_agency ca ON a.id=ca.agencyId
+		       LEFT JOIN agency b ON ca.cooperationAgencyId=b.id
+		       LEFT JOIN agency_customer ac ON a.id=ac.agencyId	
+		       LEFT JOIN customer c ON ac.custId=c.id -->
+		       where 1=1
+		 <choose>
+	   		<when test="gcon.keyword!=null and gcon.keyword!=''">
+			<bind name="gcon.keyword" value="'%' + gcon.keyword + '%'" />
+			and (a.name like #{gcon.keyword,jdbcType=VARCHAR}
+			
+			or a.address like #{gcon.keyword,jdbcType=VARCHAR}
+			
+			or a.tel like #{gcon.keyword,jdbcType=VARCHAR})
+			</when> 
+			
+		<otherwise>
+			<if test="agency.name!=null and agency.name!=''">
+				<bind name="agency.name" value="'%' + agency.name + '%'" />
+				and a.name like #{agency.name,jdbcType=VARCHAR}
+			</if>
+			<if test="agency.address!=null and agency.address!=''">
+				<bind name="agency.address" value="'%' + agency.address + '%'" />
+				and a.address like #{agency.address,jdbcType=VARCHAR}
+			</if>
+			<if test="agency.tel!=null and agency.tel!=''">
+				<bind name="agency.tel" value="'%' + agency.tel + '%'" />
+				and a.tel like #{agency.tel,jdbcType=VARCHAR}
+			</if>
+			
+			</otherwise>
+		</choose>
+		<if test="agency.status!=null and agency.status!=''">
+				<bind name="agency.status" value="agency.status " />
+				and a.status = #{agency.status,jdbcType=VARCHAR}
+		</if>
+		<bind name="gcon.offset" value="gcon.offset" /> 
+		<bind name="gcon.rows" value="gcon.rows" /> 
+		<if test="gcon.rows != null and gcon.offset != null">
+		limit #{gcon.offset,jdbcType=INTEGER}, #{gcon.rows,jdbcType=INTEGER}
+		</if>
+  </select>
+  <select id="selectCountByAgency" resultType="java.lang.Long">
+  SELECT count(a.id)
+	FROM agency a 
+		      
+		       where 1=1
+		 <choose>
+	   		<when test="gcon.keyword!=null and gcon.keyword!=''">
+			<bind name="gcon.keyword" value="'%' + gcon.keyword + '%'" />
+			and (a.name like #{gcon.keyword,jdbcType=VARCHAR}
+			
+			or a.address like #{gcon.keyword,jdbcType=VARCHAR}
+			
+			or a.tel like #{gcon.keyword,jdbcType=VARCHAR})
+			</when> 
+			
+		<otherwise>
+			<if test="agency.name!=null and agency.name!=''">
+				<bind name="agency.name" value="'%' + agency.name + '%'" />
+				and a.name like #{agency.name,jdbcType=VARCHAR}
+			</if>
+			<if test="agency.address!=null and agency.address!=''">
+				<bind name="agency.address" value="'%' + agency.address + '%'" />
+				and a.address like #{agency.address,jdbcType=VARCHAR}
+			</if>
+			<if test="agency.tel!=null and agency.tel!=''">
+				<bind name="agency.tel" value="'%' + agency.tel + '%'" />
+				and a.tel like #{agency.tel,jdbcType=VARCHAR}
+			</if>
+			
+			</otherwise>
+		</choose>
+		<if test="agency.status!=null and agency.status!=''">
+				<bind name="agency.status" value="agency.status " />
+				and a.status = #{agency.status,jdbcType=VARCHAR}
+		</if>
+  </select>
+  <select id="selectCooperationAgencyList" resultMap="BaseResultMap">
+   	SELECT	<include refid="Base_Column_List_a"/>		   
+	FROM agency a 		      
+	WHERE 1=1
+	AND 
+	(
+	a.id  IN  (SELECT ca.cooperationAgencyId FROM cooperation_agency  ca WHERE  ca.agencyId = #{agency.id,jdbcType=INTEGER})
+	OR  a.id  IN  (SELECT ca.agencyId AS id FROM cooperation_agency  ca WHERE  ca.cooperationAgencyId = #{agency.id,jdbcType=INTEGER})
+	) 
+  </select>
+   <select id="selectUnCooperationAgencyList" resultMap="BaseResultMap">
+   	SELECT	<include refid="Base_Column_List_a"/>		   
+	FROM agency a 		      
+	WHERE 1=1
+	and a.id != #{agency.id,jdbcType=INTEGER}
+	AND a.id  not IN  (SELECT ca.cooperationAgencyId FROM cooperation_agency  ca WHERE  ca.agencyId = #{agency.id,jdbcType=INTEGER})
+	AND a.id  not IN  
+	(SELECT ca.agencyId AS id FROM cooperation_agency  ca WHERE  ca.cooperationAgencyId = #{agency.id,jdbcType=INTEGER}) 
+  </select>
+  <select id="selectAgencyByUserId" resultMap="BaseResultMap">
+  	SELECT	<include refid="Base_Column_List_a"/>		   
+	FROM agency a  JOIN agency_user au ON a.id=au.agencyId
+	JOIN USER u ON au.userId=u.userId WHERE u.userId=#{userId,jdbcType=INTEGER}
+  </select>
+   <select id="selectAgencyByCustId" resultMap="BaseResultMap">
+  	SELECT	DISTINCT <include refid="Base_Column_List_a"/>		   
+	FROM agency a  JOIN agency_customer ac ON a.id=ac.agencyId
+	JOIN customer c ON ac.custId=c.id WHERE c.id=#{custId,jdbcType=INTEGER}
+  </select>
+  <select id="selectCooperationAgencyByUserId" resultMap="BaseResultMap">
+  	SELECT	 b.id , b.name , b.address , b.tel , b.logo , b.status 		   
+  	FROM 
+	agency b, cooperation_agency ca, agency a, agency_user au, USER u
+	WHERE 
+	1=1
+	and b.id=ca.agencyId
+	and ca.cooperationAgencyId=a.id
+	and a.id=au.agencyId
+	and au.userId=u.userId 
+	and u.userId=#{userId,jdbcType=INTEGER}
+	 
+  </select>
+  <select id="selectCustAndCpAgencyAmount" resultMap="RetuenAmount">
+  <choose>
+  	<when test="userId != null and userId != ''">
+  	SELECT a.amount AS custAmount , b.amount AS  agencyAmount FROM
+
+	(SELECT COUNT(c.id) AS amount  FROM customer c , USER u,user_customer uc  ,agency_customer ac WHERE   c.id = uc.custId AND u.userId = uc.userId 
+	
+	AND ac.custId = c.id AND ac.agencyId= #{agencyId,jdbcType=INTEGER} AND u.userId =#{userId,jdbcType=INTEGER})a ,
+
+	(SELECT COUNT(1) AS amount FROM cooperation_agency WHERE agencyId=#{agencyId,jdbcType=INTEGER})b
+  	</when>
+  	<otherwise>
+  	SELECT a.amount AS custAmount , b.amount AS  agencyAmount FROM
+
+	(SELECT COUNT(c.id) AS amount FROM customer c  ,agency_customer ac WHERE   ac.custId = c.id AND ac.agencyId= #{agencyId,jdbcType=INTEGER} )a,
+
+	(SELECT COUNT(1)AS amount FROM cooperation_agency WHERE agencyId=#{agencyId,jdbcType=INTEGER})b
+  	</otherwise>
+  </choose>
+  
+  
+  </select>
+  <select id="getAgencyCustomer" parameterType="int"
+	resultType="com.yootii.bdy.customer.model.Customer">
+	SELECT
+	<include refid="Base_Column_List_c" />
+	FROM agency_customer a, customer c WHERE a.agencyId=#{id} and
+	a.custId=c.id
+  </select>
+  <select id="getCooperationAgency" parameterType="int"
+	resultType="com.yootii.bdy.agency.model.Agency">
+	SELECT	<include refid="Base_Column_List_a"/>		   
+	FROM agency a 		      
+	WHERE 1=1
+	AND a.id  IN  (SELECT ca.cooperationAgencyId FROM cooperation_agency  ca WHERE  ca.agencyId = #{id,jdbcType=INTEGER})
+	OR  a.id  IN  
+	(SELECT ca.agencyId AS id FROM cooperation_agency  ca WHERE  ca.cooperationAgencyId = #{id,jdbcType=INTEGER}) 
+  </select>
+  
+</mapper>

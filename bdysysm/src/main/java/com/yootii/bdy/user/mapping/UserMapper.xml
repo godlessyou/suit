@@ -1,0 +1,610 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.yootii.bdy.user.dao.UserMapper" >
+  <resultMap id="BaseResultMap" type="com.yootii.bdy.user.model.User" >
+    <id column="userId" property="userId" jdbcType="INTEGER" />
+    <result column="username" property="username" jdbcType="VARCHAR" />
+    <result column="password" property="password" jdbcType="VARCHAR" />
+    <result column="fullname" property="fullname" jdbcType="VARCHAR" />
+    <result column="email" property="email" jdbcType="VARCHAR" />
+    <result column="emailPass" property="emailPass" jdbcType="VARCHAR" />
+    <result column="phone" property="phone" jdbcType="VARCHAR" />
+    <result column="sex" property="sex" jdbcType="VARCHAR" />
+    <result column="userType" property="userType" jdbcType="INTEGER" />
+    <result column="locked" property="locked" jdbcType="INTEGER" />
+    <result column="validDate" property="validDate" jdbcType="TIMESTAMP" />
+    <result column="validataCode" property="validataCode" jdbcType="VARCHAR" />
+    <result column="address" property="address" jdbcType="VARCHAR" />
+    <collection property="roles" ofType="com.yootii.bdy.role.model.Role" column="userId" select="getRoles"></collection>
+	<collection property="permissions" ofType="com.yootii.bdy.permission.model.Permission" column="userId" select="getPermissions"></collection>
+    <collection property="departments" ofType="com.yootii.bdy.department.model.Department" column="userId" select="getDepartments"></collection>
+    <collection property="customers" ofType="com.yootii.bdy.customer.model.Customer" column="userId" select="getCustomers"></collection>
+  </resultMap>
+   <resultMap id="BaseResultMap1" type="com.yootii.bdy.user.model.User" >
+    <id column="userId" property="userId" jdbcType="INTEGER" />
+    <result column="username" property="username" jdbcType="VARCHAR" />
+    <result column="password" property="password" jdbcType="VARCHAR" />
+    <result column="fullname" property="fullname" jdbcType="VARCHAR" />
+    <result column="email" property="email" jdbcType="VARCHAR" />
+    <result column="phone" property="phone" jdbcType="VARCHAR" />
+    <result column="sex" property="sex" jdbcType="VARCHAR" />
+    <result column="userType" property="userType" jdbcType="INTEGER" />
+    <result column="locked" property="locked" jdbcType="INTEGER" />
+    <result column="validDate" property="validDate" jdbcType="TIMESTAMP" />
+    <result column="validataCode" property="validataCode" jdbcType="VARCHAR" />
+    <result column="address" property="address" jdbcType="VARCHAR" />    
+  </resultMap>
+  <resultMap id="ResultMapWithBLOBs" type="com.yootii.bdy.user.model.User" extends="BaseResultMap" >
+    <result column="userIcon" property="userIcon" jdbcType="LONGVARCHAR" />
+  </resultMap>
+  <resultMap id="SimpleCountResultMap" type="java.util.HashMap">
+    <result column="count" jdbcType="INTEGER" property="count" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    userId, username, password, fullname, email, emailPass, phone, sex, userType, locked, validDate, 
+    validataCode, address
+  </sql>
+  <sql id="Blob_Column_List" >
+    userIcon
+  </sql>
+  <sql id="Blob_Column_List_a" >
+    a.userIcon
+  </sql>
+  <sql id="Base_Column_List_a">
+    a.userId, a.username, a.password, a.fullname, a.email, a.emailPass, a.phone, a.sex, a.userType,  a.locked, 
+    a.ValidDate, a.validataCode, a.address
+  </sql>
+  <sql id="Role_Column_List_b">
+  		b.id, b.name, b.description, b.agencyId
+  </sql>
+  <sql id="Department_Column_List_b">
+  		b.id, b.name, b.parent, b.level, agencyId 
+  </sql>
+  <sql id="Customer_Column_List_b">
+  		b.id, b.name, b.address, b.country, b.level, b.source, b.custType
+  </sql>
+  <sql id="Permission_Column_List_C">
+  		c.id, c.permission, c.note, c.agencyId
+  </sql>
+  
+  
+  <select id="getUserCaseCount" resultType="java.lang.Long" >    
+	    select count(a.caseId)
+	   	from trademark_case_process a, trademark_case b 	     
+		where 
+		1=1
+		and a.userId = #{userId,jdbcType=INTEGER}
+		and a.caseId=b.id
+		<![CDATA[
+		and b.status<>'成功'
+		]]>    
+  </select>
+  
+  
+  
+  <select id="selectByUser" resultMap="BaseResultMap">
+		select 
+		    <include refid="Base_Column_List_a" />
+		    ,
+    		<include refid="Blob_Column_List_a" />
+		from user a where 1=1
+		<choose>
+			<when test="gcon.keyword!=null and gcon.keyword!=''">
+				<bind name="gcon.keyword" value="'%' + gcon.keyword + '%'" />
+				and (
+				a.username like #{gcon.keyword,jdbcType=VARCHAR} or
+				a.fullname like #{gcon.keyword,jdbcType=VARCHAR} or
+				a.email like #{gcon.keyword,jdbcType=VARCHAR} or
+				a.phone like #{gcon.keyword,jdbcType=VARCHAR} )
+			</when>
+			<otherwise>
+				<if test="user.username!=null and user.username!=''">
+					<bind name="user.username" value="'%' + user.username + '%'" />
+					and a.username like #{user.username,jdbcType=VARCHAR}
+				</if>
+				<if test="user.fullname!=null and user.fullname!=''">
+					<bind name="user.fullname" value="'%'+user.fullname+'%'" />
+					and a.fullname like #{user.fullname,jdbcType=VARCHAR}
+				</if>
+				<if test="user.email!=null and user.email!=''">
+					<bind name="user.fullname" value="user.email" />
+					and a.email = #{user.email,jdbcType=VARCHAR}
+				</if>
+				<if test="user.phone!=null and user.phone!=''">
+					<bind name="user.phone" value="user.phone" />
+					and a.phone = #{user.phone,jdbcType=VARCHAR}
+				</if>
+			</otherwise>
+		</choose>
+		<if test="user.userType!=null">
+			<bind name="user.userType" value="user.userType" />
+				and a.userType = #{user.userType,jdbcType=INTEGER}
+		</if>
+
+		order by username
+		<bind name="gcon.offset" value="gcon.offset" />
+		<bind name="gcon.rows" value="gcon.rows" />
+		limit #{gcon.offset,jdbcType=INTEGER}, #{gcon.rows,jdbcType=INTEGER}
+	</select>
+	
+	<select id="getUserCount" resultMap="SimpleCountResultMap">
+		select count(*) as count
+		from user a where 1=1
+		<choose>
+			<when test="gcon.keyword!=null and gcon.keyword!=''">
+				<bind name="gcon.keyword" value="'%' + gcon.keyword + '%'" />
+				and (
+				a.username like #{gcon.keyword,jdbcType=VARCHAR} or
+				a.fullname like #{gcon.keyword,jdbcType=VARCHAR} or
+				a.email like #{gcon.keyword,jdbcType=VARCHAR} or
+				a.phone like #{gcon.keyword,jdbcType=VARCHAR} )
+			</when>
+			<otherwise>
+				<if test="user.username!=null and user.username!=''">
+					<bind name="user.username" value="'%' + user.username + '%'" />
+					and a.username like #{user.username,jdbcType=VARCHAR}
+				</if>
+				<if test="user.fullname!=null and user.fullname!=''">
+					<bind name="user.fullname" value="'%'+user.fullname+'%'" />
+					and a.fullname like #{user.fullname,jdbcType=VARCHAR}
+				</if>
+				<if test="user.email!=null and user.email!=''">
+					<bind name="user.fullname" value="user.email" />
+					and a.email = #{user.email,jdbcType=VARCHAR}
+				</if>
+				<if test="user.phone!=null and user.phone!=''">
+					<bind name="user.phone" value="user.phone" />
+					and a.phone = #{user.phone,jdbcType=VARCHAR}
+				</if>
+			</otherwise>
+		</choose>
+		<if test="user.userType!=null">
+			<bind name="user.userType" value="user.userType" />
+				and a.userType = #{user.userType,jdbcType=INTEGER}
+		</if>
+	</select>
+	
+	<select id="selectAgencyUserByFullName" resultMap="BaseResultMap1" parameterType="java.util.Map" >
+		select a.userId, a.username, a.fullname, a.email
+		from user a 
+		join agency_user b on a.userId = b.userId		
+		where 1=1		
+		and b.agencyId=#{agencyId,jdbcType=INTEGER}	
+		<if test="fullNameList != null">
+			and a.fullname in 
+			<foreach collection="fullNameList" index="index" item="item" open="(" separator="," close=")">
+	       	 	#{item}
+	      	</foreach>
+    	</if>   
+	</select>
+	
+	
+  
+  
+  <select id="selectAgencyUser" resultMap="BaseResultMap">
+		select 
+		    <include refid="Base_Column_List_a" />
+		    ,
+    		<include refid="Blob_Column_List_a" />
+		from user a 
+		join agency_user b on a.userId = b.userId 
+		<bind name="agencyId" value="agencyId" />
+		and b.agencyId=#{agencyId,jdbcType=INTEGER}
+		
+		where 1=1
+		<choose>
+			<when test="gcon.keyword!=null and gcon.keyword!=''">
+				<bind name="gcon.keyword" value="'%' + gcon.keyword + '%'" />
+				and (
+				a.username like #{gcon.keyword,jdbcType=VARCHAR} or
+				a.fullname like #{gcon.keyword,jdbcType=VARCHAR} or
+				a.email like #{gcon.keyword,jdbcType=VARCHAR} or
+				a.phone like #{gcon.keyword,jdbcType=VARCHAR} )
+			</when>
+			<otherwise>
+				<if test="user.username!=null and user.username!=''">
+					<bind name="user.username" value="'%' + user.username + '%'" />
+					and a.username like #{user.username,jdbcType=VARCHAR}
+				</if>
+				<if test="user.fullname!=null and user.fullname!=''">
+					<bind name="user.fullname" value="'%'+user.fullname+'%'" />
+					and a.fullname like #{user.fullname,jdbcType=VARCHAR}
+				</if>
+				<if test="user.email!=null and user.email!=''">
+					<bind name="user.fullname" value="user.email" />
+					and a.email = #{user.email,jdbcType=VARCHAR}
+				</if>
+				<if test="user.phone!=null and user.phone!=''">
+					<bind name="user.phone" value="user.phone" />
+					and a.phone = #{user.phone,jdbcType=VARCHAR}
+				</if>
+			</otherwise>
+		</choose>
+		<if test="user.userType!=null">
+			<bind name="user.userType" value="user.userType" />
+				and a.userType = #{user.userType,jdbcType=INTEGER}
+		</if>
+
+		order by a.username
+		<bind name="gcon.offset" value="gcon.offset" />
+		<bind name="gcon.rows" value="gcon.rows" />
+		limit #{gcon.offset,jdbcType=INTEGER}, #{gcon.rows,jdbcType=INTEGER}
+	</select>
+    <select id="selectAgencyUserCount" resultMap="SimpleCountResultMap">
+		select count(*) as count
+		from user a 
+		join agency_user b on a.userId = b.userId 
+		<bind name="agencyId" value="agencyId" />
+		and b.agencyId=#{agencyId,jdbcType=INTEGER}
+		where 1=1
+		<choose>
+			<when test="gcon.keyword!=null and gcon.keyword!=''">
+				<bind name="gcon.keyword" value="'%' + gcon.keyword + '%'" />
+				and (
+				a.username like #{gcon.keyword,jdbcType=VARCHAR} or
+				a.fullname like #{gcon.keyword,jdbcType=VARCHAR} or
+				a.email like #{gcon.keyword,jdbcType=VARCHAR} or
+				a.phone like #{gcon.keyword,jdbcType=VARCHAR} )
+			</when>
+			<otherwise>
+				<if test="user.username!=null and user.username!=''">
+					<bind name="user.username" value="'%' + user.username + '%'" />
+					and a.username like #{user.username,jdbcType=VARCHAR}
+				</if>
+				<if test="user.fullname!=null and user.fullname!=''">
+					<bind name="user.fullname" value="'%'+user.fullname+'%'" />
+					and a.fullname like #{user.fullname,jdbcType=VARCHAR}
+				</if>
+				<if test="user.email!=null and user.email!=''">
+					<bind name="user.fullname" value="user.email" />
+					and a.email = #{user.email,jdbcType=VARCHAR}
+				</if>
+				<if test="user.phone!=null and user.phone!=''">
+					<bind name="user.phone" value="user.phone" />
+					and a.phone = #{user.phone,jdbcType=VARCHAR}
+				</if>
+			</otherwise>
+		</choose>
+		<if test="user.userType!=null">
+			<bind name="user.userType" value="user.userType" />
+				and a.userType = #{user.userType,jdbcType=INTEGER}
+		</if>
+	</select>
+	
+  <select id="selectByPrimaryKey" resultMap="ResultMapWithBLOBs" parameterType="java.lang.Integer" >
+    select 
+    <include refid="Base_Column_List" />
+    ,
+    <include refid="Blob_Column_List" />
+    from user
+    where userId = #{userId,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
+    delete from user
+    where userId = #{userId,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.yootii.bdy.user.model.User" >
+    insert into user (userId, username, password, 
+      fullname, email, emailPass, phone, 
+      sex, userType, locked, 
+      validDate, validataCode, userIcon
+      )
+    values (#{userId,jdbcType=INTEGER}, #{username,jdbcType=VARCHAR}, #{password,jdbcType=VARCHAR}, 
+      #{fullname,jdbcType=VARCHAR}, #{email,jdbcType=VARCHAR}, #{emailPass,jdbcType=VARCHAR}, #{phone,jdbcType=VARCHAR}, 
+      #{sex,jdbcType=VARCHAR}, #{userType,jdbcType=INTEGER}, #{locked,jdbcType=INTEGER}, 
+      #{validDate,jdbcType=TIMESTAMP}, #{validataCode,jdbcType=VARCHAR}, #{userIcon,jdbcType=LONGVARCHAR}
+      )
+  </insert>
+  <insert id="insertSelective" parameterType="com.yootii.bdy.user.model.User" useGeneratedKeys="true" keyProperty="userId">
+    insert into user
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="userId != null" >
+        userId,
+      </if>
+      <if test="username != null" >
+        username,
+      </if>
+      <if test="password != null" >
+        password,
+      </if>
+      <if test="fullname != null" >
+        fullname,
+      </if>
+      <if test="email != null" >
+        email,
+      </if>
+      <if test="emailPass != null" >
+        emailPass,
+      </if>
+      <if test="phone != null" >
+        phone,
+      </if>
+      <if test="sex != null" >
+        sex,
+      </if>
+      <if test="userType != null" >
+        userType,
+      </if>
+      <if test="locked != null" >
+        locked,
+      </if>
+      <if test="validDate != null" >
+        validDate,
+      </if>
+      <if test="validataCode != null" >
+        validataCode,
+      </if>
+      <if test="address != null" >
+        address,
+      </if>
+      <if test="userIcon != null" >
+        userIcon,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="userId != null" >
+        #{userId,jdbcType=INTEGER},
+      </if>
+      <if test="username != null" >
+        #{username,jdbcType=VARCHAR},
+      </if>
+      <if test="password != null" >
+        #{password,jdbcType=VARCHAR},
+      </if>
+      <if test="fullname != null" >
+        #{fullname,jdbcType=VARCHAR},
+      </if>
+      <if test="email != null" >
+        #{email,jdbcType=VARCHAR},
+      </if>
+      <if test="emailPass != null" >
+        #{emailPass,jdbcType=VARCHAR},
+      </if>
+      <if test="phone != null" >
+        #{phone,jdbcType=VARCHAR},
+      </if>
+      <if test="sex != null" >
+        #{sex,jdbcType=VARCHAR},
+      </if>
+      <if test="userType != null" >
+        #{userType,jdbcType=INTEGER},
+      </if>
+      <if test="locked != null" >
+        #{locked,jdbcType=INTEGER},
+      </if>
+      <if test="validDate != null" >
+        #{validDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="validataCode != null" >
+        #{validataCode,jdbcType=VARCHAR},
+      </if>
+      <if test="address != null" >
+        #{address,jdbcType=VARCHAR},
+      </if>
+      <if test="userIcon != null" >
+        #{userIcon,jdbcType=LONGVARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.yootii.bdy.user.model.User" >
+    update user
+    <set >
+      <if test="username != null" >
+        username = #{username,jdbcType=VARCHAR},
+      </if>
+      <if test="password != null" >
+        password = #{password,jdbcType=VARCHAR},
+      </if>
+      <if test="fullname != null" >
+        fullname = #{fullname,jdbcType=VARCHAR},
+      </if>
+      <if test="email != null" >
+        email = #{email,jdbcType=VARCHAR},
+      </if>
+      <if test="emailPass != null" >
+        emailPass = #{emailPass,jdbcType=VARCHAR},
+      </if>
+      <if test="phone != null" >
+        phone = #{phone,jdbcType=VARCHAR},
+      </if>
+      <if test="sex != null" >
+        sex = #{sex,jdbcType=VARCHAR},
+      </if>
+      <if test="userType != null" >
+        userType = #{userType,jdbcType=INTEGER},
+      </if>
+      <if test="locked != null" >
+        locked = #{locked,jdbcType=INTEGER},
+      </if>
+      <if test="validDate != null" >
+        validDate = #{validDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="validataCode != null" >
+        validataCode = #{validataCode,jdbcType=VARCHAR},
+      </if>
+      <if test="address != null" >
+        address = #{address,jdbcType=VARCHAR},
+      </if>
+      <if test="userIcon != null" >
+        userIcon = #{userIcon,jdbcType=LONGVARCHAR},
+      </if>
+    </set>
+    where userId = #{userId,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKeyWithBLOBs" parameterType="com.yootii.bdy.user.model.User" >
+    update user
+    set username = #{username,jdbcType=VARCHAR},
+      password = #{password,jdbcType=VARCHAR},
+      fullname = #{fullname,jdbcType=VARCHAR},
+      email = #{email,jdbcType=VARCHAR},
+      emailPass = #{emailPass,jdbcType=VARCHAR},
+      phone = #{phone,jdbcType=VARCHAR},
+      sex = #{sex,jdbcType=VARCHAR},
+      userType = #{userType,jdbcType=INTEGER},
+      locked = #{locked,jdbcType=INTEGER},
+      validDate = #{validDate,jdbcType=TIMESTAMP},
+      validataCode = #{validataCode,jdbcType=VARCHAR},
+      address = #{address,jdbcType=VARCHAR},
+      userIcon = #{userIcon,jdbcType=LONGVARCHAR}
+    where userId = #{userId,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.yootii.bdy.user.model.User" >
+    update user
+    set username = #{username,jdbcType=VARCHAR},
+      password = #{password,jdbcType=VARCHAR},
+      fullname = #{fullname,jdbcType=VARCHAR},
+      email = #{email,jdbcType=VARCHAR},
+      emailPass = #{emailPass,jdbcType=VARCHAR},
+      phone = #{phone,jdbcType=VARCHAR},
+      sex = #{sex,jdbcType=VARCHAR},
+      userType = #{userType,jdbcType=INTEGER},
+      locked = #{locked,jdbcType=INTEGER},
+      validDate = #{validDate,jdbcType=TIMESTAMP},
+      validataCode = #{validataCode,jdbcType=VARCHAR},
+      address = #{address,jdbcType=VARCHAR}
+    where userId = #{userId,jdbcType=INTEGER}
+  </update>
+  <select id="selectByUsername" resultMap="ResultMapWithBLOBs" parameterType="string" >
+    select 
+    <include refid="Base_Column_List" />
+    ,
+    <include refid="Blob_Column_List" />
+	from user
+	where username = #{username,jdbcType=VARCHAR}
+  </select>
+  <select id="selectByEmail" resultMap="ResultMapWithBLOBs" parameterType="string" >
+    select 
+    <include refid="Base_Column_List" />
+    ,
+    <include refid="Blob_Column_List" />
+	from user
+	where email = #{email,jdbcType=VARCHAR}
+  </select>
+  
+  <select id="getPermissions" parameterType="int"
+	resultType="com.yootii.bdy.permission.model.Permission">
+	SELECT
+	<include refid="Permission_Column_List_C" />
+	FROM user_role a, role_permission b,permission c WHERE a.userId=#{userId} and
+	a.roleId=b.roleId and b.permissionId = c.id
+  </select>
+  
+  <select id="getRoles" parameterType="int"
+	resultType="com.yootii.bdy.role.model.Role">
+	SELECT
+	<include refid="Role_Column_List_b" />
+	FROM user_role a, role b WHERE a.userId=#{userId} and
+	a.roleId=b.id
+  </select>
+  <select id="getDepartments" parameterType="int"
+	resultType="com.yootii.bdy.department.model.Department">
+	SELECT
+	<include refid="Department_Column_List_b" />
+	FROM user_department a, department b WHERE a.userId=#{userId} and
+	a.departmentId=b.id
+  </select>
+  <select id="getCustomers" parameterType="int"
+	resultType="com.yootii.bdy.customer.model.Customer">
+	SELECT
+	<include refid="Customer_Column_List_b" />
+	FROM user_customer a, customer b WHERE a.userId=#{userId} and
+	a.custId=b.id
+  </select>
+  <insert id="bindRole" >
+    insert into user_role (roleId,userId)
+    values (#{roleId,jdbcType=INTEGER}, #{userId,jdbcType=INTEGER})
+  </insert>
+  <delete id="unbindRole">
+    delete from user_role 
+    where roleId = #{roleId,jdbcType=INTEGER} and userId = #{userId,jdbcType=INTEGER}
+  </delete>
+  <insert id="bindDepartment" >
+    insert into user_department(userId,departmentId)
+    values (#{userId,jdbcType=INTEGER}, #{departmentId,jdbcType=INTEGER})
+  </insert>
+  <delete id="unbindDepartment">
+    delete from user_department 
+    where departmentId = #{departmentId,jdbcType=INTEGER} and userId = #{userId,jdbcType=INTEGER}
+  </delete>
+  <insert id="bindCustomer" >
+    insert into user_customer (custId,userId)
+    values (#{custId,jdbcType=INTEGER}, #{userId,jdbcType=INTEGER})
+  </insert>
+  <delete id="unbindCustomer">
+    delete from user_customer 
+    where custId = #{custId,jdbcType=INTEGER} and userId = #{userId,jdbcType=INTEGER}
+  </delete>
+  <insert id="bindAgency">
+    insert into agency_user (agencyId,userId)
+    values (#{agencyId,jdbcType=INTEGER}, #{userId,jdbcType=INTEGER})
+  </insert>
+  <delete id="unbindAgency">
+    delete from agency_user 
+    where agencyId = #{agencyId,jdbcType=INTEGER} and userId = #{userId,jdbcType=INTEGER}
+  </delete>
+  <select id="selectUserByDeptId" resultMap="ResultMapWithBLOBs" parameterType="int" >
+    select 
+    <include refid="Base_Column_List_a" />
+    ,
+    <include refid="Blob_Column_List_a" />
+	FROM  user a, user_department b 
+	WHERE b.departmentId = #{deptId,jdbcType=INTEGER}
+	and	a.userId=b.userId;
+  </select>
+  <select id="selectUserByDeptIdCount" resultMap="SimpleCountResultMap" parameterType="int" >
+    select count(*) as count
+	FROM  user a, user_department b 
+	WHERE b.departmentId = #{deptId,jdbcType=INTEGER}
+	and	a.userId=b.userId;
+  </select>
+  <select id="selectUserByPermission" resultMap="ResultMapWithBLOBs">
+  select 
+    DISTINCT(a.userId), a.username, a.password, a.fullname, a.email, a.phone, a.sex, a.userType,  a.locked, 
+    a.ValidDate, a.validataCode, a.address,
+    <include refid="Blob_Column_List_a" />
+     FROM permission p ,role_permission rp,role r,USER a,user_role ur, agency_user au
+	WHERE 1=1 AND p.id = rp.permissionId AND rp.roleId = r.id AND r.id = ur.roleId AND ur.userId = a.userId and a.userId=au.userId
+	AND p.permission =	#{permission.permission,jdbcType=VARCHAR} 
+	AND p.agencyId = #{permission.agencyId,jdbcType=INTEGER} 
+	AND au.agencyId = #{permission.agencyId,jdbcType=INTEGER}
+	<!-- <if test="gcon.offset!=null and gcon.offset!='' and gcon.rows!=null and gcon.rows!=''">
+		<bind name="gcon.offset" value="gcon.offset" />
+		<bind name="gcon.rows" value="gcon.rows" />
+		limit #{gcon.offset,jdbcType=INTEGER}, #{gcon.rows,jdbcType=INTEGER}
+	</if> -->
+	
+  </select>
+  <select id="selectUserByPermissionCount" resultType="java.lang.Long">
+  	select count(a.userId)
+     FROM permission p ,role_permission rp,role r,USER a,user_role ur 
+	WHERE 1=1 AND p.id = rp.permissionId AND rp.roleId = r.id AND r.id = ur.roleId AND ur.userId = a.userId
+	AND p.permission =	#{permission.permission,jdbcType=VARCHAR} AND p.agencyId = #{permission.agencyId,jdbcType=INTEGER}
+	
+  </select>
+  <select id="queryContactUserByAgencyId" resultMap="ResultMapWithBLOBs" parameterType="int" >
+    select 
+	<include refid="Base_Column_List_a" />
+    ,
+    <include refid="Blob_Column_List_a" />
+	from user a 
+	left join user_role b on a.userId = b.userId
+	left join role c on b.roleId = c.id
+	where c.name ='对外账单联系人' and c.agencyId=#{agencyId,jdbcType=INTEGER}
+  </select> 
+  <select id="selectAgentByAgencyId" resultMap="BaseResultMap1" parameterType="int" >
+    select 
+	<include refid="Base_Column_List_a" />
+	from user a 
+	left join user_role b on a.userId = b.userId
+	left join role c on b.roleId = c.id
+	where c.name ='代理人' and c.agencyId=#{agencyId,jdbcType=INTEGER}
+  </select>  
+  <select id="selectAdminByAgencyId" resultMap="ResultMapWithBLOBs" parameterType="java.lang.Integer"  >
+    select a.username, a.fullname, a.email
+	from user a 
+	left join user_role b on a.userId = b.userId
+	left join role c on b.roleId = c.id
+	where c.name ='代理机构管理员' and c.agencyId=#{agencyId,jdbcType=INTEGER}
+  </select>
+  
+</mapper>

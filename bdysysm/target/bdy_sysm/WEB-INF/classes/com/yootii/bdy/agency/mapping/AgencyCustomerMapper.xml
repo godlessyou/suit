@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.yootii.bdy.agency.dao.AgencyCustomerMapper" >
+  <resultMap id="BaseResultMap" type="com.yootii.bdy.agency.model.AgencyCustomer" >
+    <id column="id" property="id" jdbcType="INTEGER" />
+    <result column="agencyId" property="agencyId" jdbcType="INTEGER" />
+    <result column="custId" property="custId" jdbcType="INTEGER" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    id, agencyId, custId
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select 
+    <include refid="Base_Column_List" />
+    from agency_customer
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
+    delete from agency_customer
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.yootii.bdy.agency.model.AgencyCustomer" >
+    insert into agency_customer (id, agencyId, custId
+      )
+    values (#{id,jdbcType=INTEGER}, #{agencyId,jdbcType=INTEGER}, #{custId,jdbcType=INTEGER}
+      )
+  </insert>
+  <insert id="insertSelective" parameterType="com.yootii.bdy.agency.model.AgencyCustomer" useGeneratedKeys="true" keyProperty="id">
+    insert into agency_customer
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        id,
+      </if>
+      <if test="agencyId != null" >
+        agencyId,
+      </if>
+      <if test="custId != null" >
+        custId,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        #{id,jdbcType=INTEGER},
+      </if>
+      <if test="agencyId != null" >
+        #{agencyId,jdbcType=INTEGER},
+      </if>
+      <if test="custId != null" >
+        #{custId,jdbcType=INTEGER},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.yootii.bdy.agency.model.AgencyCustomer" >
+    update agency_customer
+    <set >
+      <if test="agencyId != null" >
+        agencyId = #{agencyId,jdbcType=INTEGER},
+      </if>
+      <if test="custId != null" >
+        custId = #{custId,jdbcType=INTEGER},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.yootii.bdy.agency.model.AgencyCustomer" >
+    update agency_customer
+    set agencyId = #{agencyId,jdbcType=INTEGER},
+      custId = #{custId,jdbcType=INTEGER}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+   <select id="selectByAgencyAndCustId" parameterType="java.lang.Integer" resultType="java.lang.Integer">
+  select count(id) from agency_customer 
+  where agencyId=#{agencyId,jdbcType=INTEGER}
+  and custId=#{custId,jdbcType=INTEGER}
+  </select>
+  <select id="selectCustIdByAgencyId" parameterType="java.lang.Integer" resultType="java.lang.Integer">
+  select custId from agency_customer 
+  where agencyId=#{agencyId,jdbcType=INTEGER}
+  </select>
+</mapper>

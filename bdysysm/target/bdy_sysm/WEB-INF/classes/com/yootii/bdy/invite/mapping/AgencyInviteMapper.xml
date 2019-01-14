@@ -1,0 +1,194 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.yootii.bdy.invite.dao.AgencyInviteMapper" >
+  <resultMap id="BaseResultMap" type="com.yootii.bdy.invite.model.AgencyInvite" >
+    <id column="id" property="id" jdbcType="INTEGER" />
+    <result column="name" property="name" jdbcType="VARCHAR" />
+    <result column="email" property="email" jdbcType="VARCHAR" />
+    <result column="status" property="status" jdbcType="VARCHAR" />
+    <result column="validDate" property="validDate" jdbcType="TIMESTAMP" />
+    <result column="validataCode" property="validataCode" jdbcType="VARCHAR" />
+    <result column="processInstanceId" property="processInstanceId" jdbcType="INTEGER" />
+  </resultMap>
+  <resultMap id="SimpleCountResultMap" type="java.util.HashMap">
+	<result column="count" jdbcType="INTEGER" property="count" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    id, name, email, status, validDate, validataCode, processInstanceId
+  </sql>
+  
+  <select id="selectAgencyInviteList" resultMap="BaseResultMap" >
+    select 
+    <include refid="Base_Column_List" />
+    from agency_invite
+    where 1=1
+    <choose>
+		<when test="gcon.keyword!=null and gcon.keyword!=''">
+			<bind name="gcon.keyword" value="'%' + gcon.keyword + '%'" />
+			and (
+			name like #{gcon.keyword,jdbcType=VARCHAR} or
+			email like #{gcon.keyword,jdbcType=VARCHAR})
+		</when>
+		<otherwise>
+			<if test="record.name!=null and record.name!=''">
+				<bind name="record.name" value="'%' + record.name + '%'" />
+				and name like #{record.name,jdbcType=VARCHAR}
+			</if>
+			<if test="record.email!=null and record.email!=''">
+				<bind name="record.email" value="'%'+record.email+'%'" />
+				and email like #{record.email,jdbcType=VARCHAR}
+			</if>
+		</otherwise>
+	</choose>
+	<if test="record.status!=null and record.status!=''">
+				and status = #{record.status,jdbcType=VARCHAR}
+	</if>
+	order by name
+	<bind name="gcon.offset" value="gcon.offset" />
+	<bind name="gcon.rows" value="gcon.rows" />
+	limit #{gcon.offset,jdbcType=INTEGER}, #{gcon.rows,jdbcType=INTEGER}
+  </select>
+  <select id="selectAgencyInviteCount" resultMap="SimpleCountResultMap" >
+    select count(*) as count
+    from agency_invite
+    where 1=1
+    <choose>
+		<when test="gcon.keyword!=null and gcon.keyword!=''">
+			<bind name="gcon.keyword" value="'%' + gcon.keyword + '%'" />
+			and (
+			name like #{gcon.keyword,jdbcType=VARCHAR} or
+			email like #{gcon.keyword,jdbcType=VARCHAR})
+		</when>
+		<otherwise>
+			<if test="record.name!=null and record.name!=''">
+				<bind name="record.name" value="'%' + record.name + '%'" />
+				and name like #{record.name,jdbcType=VARCHAR}
+			</if>
+			<if test="record.email!=null and record.email!=''">
+				<bind name="record.email" value="'%'+record.email+'%'" />
+				and email like #{record.email,jdbcType=VARCHAR}
+			</if>
+		</otherwise>
+	</choose>
+	<if test="record.status!=null and record.email!=''">
+				and status = #{record.status,jdbcType=VARCHAR}
+	</if>
+  </select>
+  
+   <select id="selectByEmail" resultMap="BaseResultMap" parameterType="string" >
+    select 
+    <include refid="Base_Column_List" />
+    from agency_invite
+    where email = #{email,jdbcType=VARCHAR}
+    
+    order by id desc
+    limit 1
+  </select>
+  
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select 
+    <include refid="Base_Column_List" />
+    from agency_invite
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
+    delete from agency_invite
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.yootii.bdy.invite.model.AgencyInvite" >
+    insert into agency_invite (id, name, email, 
+      status, validDate, validataCode, processInstanceId
+      )
+    values (#{id,jdbcType=INTEGER}, #{name,jdbcType=VARCHAR}, #{email,jdbcType=VARCHAR}, 
+      #{status,jdbcType=VARCHAR}, #{validDate,jdbcType=TIMESTAMP}, #{validataCode,jdbcType=VARCHAR}, #{processInstanceId,jdbcType=INTEGER}
+      )
+  </insert>
+  <insert id="insertSelective" parameterType="com.yootii.bdy.invite.model.AgencyInvite" useGeneratedKeys="true" keyProperty="id">
+    insert into agency_invite
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        id,
+      </if>
+      <if test="name != null" >
+        name,
+      </if>
+      <if test="email != null" >
+        email,
+      </if>
+      <if test="status != null" >
+        status,
+      </if>
+      <if test="validDate != null" >
+        validDate,
+      </if>
+      <if test="validataCode != null" >
+        validataCode,
+      </if>
+      <if test="processInstanceId != null" >
+        processInstanceId,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        #{id,jdbcType=INTEGER},
+      </if>
+      <if test="name != null" >
+        #{name,jdbcType=VARCHAR},
+      </if>
+      <if test="email != null" >
+        #{email,jdbcType=VARCHAR},
+      </if>
+      <if test="status != null" >
+        #{status,jdbcType=VARCHAR},
+      </if>
+      <if test="validDate != null" >
+        #{validDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="validataCode != null" >
+        #{validataCode,jdbcType=VARCHAR},
+      </if>
+      <if test="processInstanceId != null" >
+        #{processInstanceId,jdbcType=INTEGER},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.yootii.bdy.invite.model.AgencyInvite" >
+    update agency_invite
+    <set >
+      <if test="name != null" >
+        name = #{name,jdbcType=VARCHAR},
+      </if>
+      <if test="email != null" >
+        email = #{email,jdbcType=VARCHAR},
+      </if>
+      <if test="status != null" >
+        status = #{status,jdbcType=VARCHAR},
+      </if>
+      <if test="validDate != null" >
+        validDate = #{validDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="validataCode != null" >
+        validataCode = #{validataCode,jdbcType=VARCHAR},
+      </if>
+      <if test="processInstanceId != null" >
+        processInstanceId = #{processInstanceId,jdbcType=INTEGER},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.yootii.bdy.invite.model.AgencyInvite" >
+    update agency_invite
+    set name = #{name,jdbcType=VARCHAR},
+      email = #{email,jdbcType=VARCHAR},
+      status = #{status,jdbcType=VARCHAR},
+      validDate = #{validDate,jdbcType=TIMESTAMP},
+      validataCode = #{validataCode,jdbcType=VARCHAR},
+      processInstanceId = #{processInstanceId,jdbcType=INTEGER}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateStatusById" parameterType="com.yootii.bdy.invite.model.AgencyInvite" >
+    update agency_invite
+    set status = #{status,jdbcType=VARCHAR}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+</mapper>

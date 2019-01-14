@@ -1,0 +1,271 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yootii.bdy.bill.dao.PayAcountMapper">
+  <resultMap id="BaseResultMap" type="com.yootii.bdy.bill.model.PayAcount">
+    <id column="payAcountId" jdbcType="INTEGER" property="payAcountId" />
+    <result column="payAcountName" jdbcType="VARCHAR" property="payAcountName" />
+    <result column="bankAcountName" jdbcType="VARCHAR" property="bankAcountName" />
+    <result column="bankAcountAddress" jdbcType="VARCHAR" property="bankAcountAddress" />
+    <result column="bankName" jdbcType="VARCHAR" property="bankName" />
+    <result column="bankAcount" jdbcType="VARCHAR" property="bankAcount" />
+    <result column="bankNo" jdbcType="VARCHAR" property="bankNo" />
+    <result column="swiftCode" jdbcType="VARCHAR" property="swiftCode" />
+    <result column="agencyId" jdbcType="INTEGER" property="agencyId" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    payAcountId, payAcountName, bankAcountName, bankAcountAddress, bankName, bankAcount, 
+    bankNo, swiftCode, agencyId
+  </sql>
+  <sql id="Base_Column_List_p">
+    p.payAcountId, p.payAcountName, p.bankAcountName, p.bankAcountAddress, p.bankName, p.bankAcount, 
+    p.bankNo, p.swiftCode, p.agencyId
+  </sql>
+  <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from pay_acount
+    where payAcountId = #{payAcountId,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+    delete from pay_acount
+    where payAcountId = #{payAcountId,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.yootii.bdy.bill.model.PayAcount">
+    insert into pay_acount (payAcountId, payAcountName, bankAcountName, 
+      bankAcountAddress, bankName, bankAcount, 
+      bankNo, swiftCode, agencyId
+      )
+    values (#{payAcountId,jdbcType=INTEGER}, #{payAcountName,jdbcType=VARCHAR}, #{bankAcountName,jdbcType=VARCHAR}, 
+      #{bankAcountAddress,jdbcType=VARCHAR}, #{bankName,jdbcType=VARCHAR}, #{bankAcount,jdbcType=VARCHAR}, 
+      #{bankNo,jdbcType=VARCHAR}, #{swiftCode,jdbcType=VARCHAR}, #{agencyId,jdbcType=INTEGER}
+      )
+  </insert>
+  <insert id="insertSelective" parameterType="com.yootii.bdy.bill.model.PayAcount" useGeneratedKeys="true" keyProperty="payAcountId">
+    insert into pay_acount
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="payAcountId != null">
+        payAcountId,
+      </if>
+      <if test="payAcountName != null">
+        payAcountName,
+      </if>
+      <if test="bankAcountName != null">
+        bankAcountName,
+      </if>
+      <if test="bankAcountAddress != null">
+        bankAcountAddress,
+      </if>
+      <if test="bankName != null">
+        bankName,
+      </if>
+      <if test="bankAcount != null">
+        bankAcount,
+      </if>
+      <if test="bankNo != null">
+        bankNo,
+      </if>
+      <if test="swiftCode != null">
+        swiftCode,
+      </if>
+      <if test="agencyId != null">
+        agencyId,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="payAcountId != null">
+        #{payAcountId,jdbcType=INTEGER},
+      </if>
+      <if test="payAcountName != null">
+        #{payAcountName,jdbcType=VARCHAR},
+      </if>
+      <if test="bankAcountName != null">
+        #{bankAcountName,jdbcType=VARCHAR},
+      </if>
+      <if test="bankAcountAddress != null">
+        #{bankAcountAddress,jdbcType=VARCHAR},
+      </if>
+      <if test="bankName != null">
+        #{bankName,jdbcType=VARCHAR},
+      </if>
+      <if test="bankAcount != null">
+        #{bankAcount,jdbcType=VARCHAR},
+      </if>
+      <if test="bankNo != null">
+        #{bankNo,jdbcType=VARCHAR},
+      </if>
+      <if test="swiftCode != null">
+        #{swiftCode,jdbcType=VARCHAR},
+      </if>
+      <if test="agencyId != null">
+        #{agencyId,jdbcType=INTEGER},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.yootii.bdy.bill.model.PayAcount">
+    update pay_acount
+    <set>
+      <if test="payAcountName != null">
+        payAcountName = #{payAcountName,jdbcType=VARCHAR},
+      </if>
+      <if test="bankAcountName != null">
+        bankAcountName = #{bankAcountName,jdbcType=VARCHAR},
+      </if>
+      <if test="bankAcountAddress != null">
+        bankAcountAddress = #{bankAcountAddress,jdbcType=VARCHAR},
+      </if>
+      <if test="bankName != null">
+        bankName = #{bankName,jdbcType=VARCHAR},
+      </if>
+      <if test="bankAcount != null">
+        bankAcount = #{bankAcount,jdbcType=VARCHAR},
+      </if>
+      <if test="bankNo != null">
+        bankNo = #{bankNo,jdbcType=VARCHAR},
+      </if>
+      <if test="swiftCode != null">
+        swiftCode = #{swiftCode,jdbcType=VARCHAR},
+      </if>
+      <if test="agencyId != null">
+        agencyId = #{agencyId,jdbcType=INTEGER},
+      </if>
+    </set>
+    where payAcountId = #{payAcountId,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.yootii.bdy.bill.model.PayAcount">
+    update pay_acount
+    set payAcountName = #{payAcountName,jdbcType=VARCHAR},
+      bankAcountName = #{bankAcountName,jdbcType=VARCHAR},
+      bankAcountAddress = #{bankAcountAddress,jdbcType=VARCHAR},
+      bankName = #{bankName,jdbcType=VARCHAR},
+      bankAcount = #{bankAcount,jdbcType=VARCHAR},
+      bankNo = #{bankNo,jdbcType=VARCHAR},
+      swiftCode = #{swiftCode,jdbcType=VARCHAR},
+      agencyId = #{agencyId,jdbcType=INTEGER}
+    where payAcountId = #{payAcountId,jdbcType=INTEGER}
+  </update>
+  
+  <select id="selectByPayAcount" resultMap="BaseResultMap">
+  	select <include refid="Base_Column_List_p"/> from pay_acount p where 1=1
+  	<choose>
+  		<when test="gcon.keyword!=null and gcon.keyword!=''">
+			<bind name="gcon.keyword" value="'%' + gcon.keyword + '%'" />
+			and (p.payAcountName like #{gcon.keyword,jdbcType=VARCHAR} or
+				p.bankAcountName like #{gcon.keyword,jdbcType=VARCHAR} or
+				p.bankName  like #{gcon.keyword,jdbcType=VARCHAR})
+  		</when>
+  		<otherwise>
+  			<if test="payAcount.payAcountName!=null and payAcount.payAcountName!=''">
+				<bind name="payAcount.payAcountName" value="'%' + payAcount.payAcountName + '%'" />
+				and p.payAcountName like #{payAcount.payAcountName,jdbcType=VARCHAR}
+			</if>
+			<if test="payAcount.bankAcountName!=null and payAcount.bankAcountName!=''">
+				<bind name="payAcount.bankAcountName" value="'%' + payAcount.bankAcountName + '%'" />
+				and p.bankAcountName like #{payAcount.bankAcountName,jdbcType=VARCHAR}
+			</if>
+			<if test="payAcount.bankName!=null and payAcount.bankName!=''">
+				<bind name="payAcount.bankName" value="'%' + payAcount.bankName + '%'" />
+				and p.bankName like #{payAcount.bankName,jdbcType=VARCHAR}
+			</if>
+			<if test="payAcount.bankAcountAddress!=null and payAcount.bankAcountAddress!=''">
+				<bind name="payAcount.bankAcountAddress" value="'%' + payAcount.bankAcountAddress + '%'" />
+				and p.bankAcountAddress like #{payAcount.bankAcountAddress,jdbcType=VARCHAR}
+			</if>
+			<if test="payAcount.bankAcount!=null and payAcount.bankAcount!=''">
+				<bind name="payAcount.bankAcount" value="'%' + payAcount.bankAcount + '%'" />
+				and p.bankAcount like #{payAcount.bankAcount,jdbcType=VARCHAR}
+			</if>
+			<if test="payAcount.bankNo!=null and payAcount.bankNo!=''">
+				<bind name="payAcount.bankNo" value="'%' + payAcount.bankNo + '%'" />
+				and p.bankNo like #{payAcount.bankNo,jdbcType=VARCHAR}
+			</if>
+			<if test="payAcount.swiftCode!=null and payAcount.swiftCode!=''">
+				<bind name="payAcount.swiftCode" value="'%' + payAcount.swiftCode + '%'" />
+				and p.swiftCode like #{payAcount.swiftCode,jdbcType=VARCHAR}
+			</if>
+			
+  		</otherwise>
+  			
+  	</choose>
+  		<if test="payAcount.agencyId!=null and payAcount.agencyId!=''">
+				<bind name="payAcount.agencyId" value="payAcount.agencyId" />
+				and p.agencyId = #{payAcount.agencyId,jdbcType=INTEGER}
+			</if>
+	  		<bind name="gcon.offset" value="gcon.offset" /> 
+			<bind name="gcon.rows" value="gcon.rows" /> 
+			<if test="gcon.rows != null and gcon.offset != null">
+			limit #{gcon.offset,jdbcType=INTEGER}, #{gcon.rows,jdbcType=INTEGER}
+			</if>
+  </select>
+  
+  <select id="selectCountByPayAcount" resultType="java.lang.Long">
+  	select count(p.payAcountId) from pay_acount p where 1=1
+  	<choose>
+  		<when test="gcon.keyword!=null and gcon.keyword!=''">
+			<bind name="gcon.keyword" value="'%' + gcon.keyword + '%'" />
+			and (p.payAcountName like #{gcon.keyword,jdbcType=VARCHAR} or
+				p.bankAcountName like #{gcon.keyword,jdbcType=VARCHAR} or
+				p.bankName  like #{gcon.keyword,jdbcType=VARCHAR})
+  		</when>
+  		<otherwise>
+  			<if test="payAcount.payAcountName!=null and payAcount.payAcountName!=''">
+				<bind name="payAcount.payAcountName" value="'%' + payAcount.payAcountName + '%'" />
+				and p.payAcountName like #{payAcount.payAcountName,jdbcType=VARCHAR}
+			</if>
+			<if test="payAcount.bankAcountName!=null and payAcount.bankAcountName!=''">
+				<bind name="payAcount.bankAcountName" value="'%' + payAcount.bankAcountName + '%'" />
+				and p.bankAcountName like #{payAcount.bankAcountName,jdbcType=VARCHAR}
+			</if>
+			<if test="payAcount.bankName!=null and payAcount.bankName!=''">
+				<bind name="payAcount.bankName" value="'%' + payAcount.bankName + '%'" />
+				and p.bankName like #{payAcount.bankName,jdbcType=VARCHAR}
+			</if>
+			<if test="payAcount.bankAcountAddress!=null and payAcount.bankAcountAddress!=''">
+				<bind name="payAcount.bankAcountAddress" value="'%' + payAcount.bankAcountAddress + '%'" />
+				and p.bankAcountAddress like #{payAcount.bankAcountAddress,jdbcType=VARCHAR}
+			</if>
+			<if test="payAcount.bankAcount!=null and payAcount.bankAcount!=''">
+				<bind name="payAcount.bankAcount" value="'%' + payAcount.bankAcount + '%'" />
+				and p.bankAcount like #{payAcount.bankAcount,jdbcType=VARCHAR}
+			</if>
+			<if test="payAcount.bankNo!=null and payAcount.bankNo!=''">
+				<bind name="payAcount.bankNo" value="'%' + payAcount.bankNo + '%'" />
+				and p.bankNo like #{payAcount.bankNo,jdbcType=VARCHAR}
+			</if>
+			<if test="payAcount.swiftCode!=null and payAcount.swiftCode!=''">
+				<bind name="payAcount.swiftCode" value="'%' + payAcount.swiftCode + '%'" />
+				and p.swiftCode like #{payAcount.swiftCode,jdbcType=VARCHAR}
+			</if>
+			
+  		</otherwise>
+  			
+  	</choose>
+	  		<if test="payAcount.agencyId!=null and payAcount.agencyId!=''">
+				<bind name="payAcount.agencyId" value="payAcount.agencyId" />
+				and p.agencyId = #{payAcount.agencyId,jdbcType=INTEGER}
+			</if>
+  </select>
+  <select id="checkPayAcountByBankAcount" resultType="java.lang.Integer">
+  	select count(p.payAcountId) from pay_acount p where 1=1
+  	<if test="payAcount.bankAcount!=null and payAcount.bankAcount!=''">
+  	and  p.bankAcount = #{payAcount.bankAcount,jdbcType=VARCHAR}
+  	</if>
+  	<if test="payAcount.payAcountId!=null and payAcount.payAcountId!=''">
+  	and p.payAcountId != #{payAcount.payAcountId,jdbcType=INTEGER}
+  	</if>
+  	<if test="payAcount.agencyId!=null and payAcount.agencyId!=''">
+  	and  p.agencyId = #{payAcount.agencyId,jdbcType=INTEGER}
+  	</if>
+  </select>
+  <select id="checkPayAcountByPayAcountName" resultType="java.lang.Integer">
+  	select count(p.payAcountId) from pay_acount p where 1=1
+  	<if test="payAcount.payAcountName!=null and payAcount.payAcountName!=''">
+  	and  p.payAcountName = #{payAcount.payAcountName,jdbcType=VARCHAR}
+  	</if>
+  	<if test="payAcount.payAcountId!=null and payAcount.payAcountId!=''">
+  	and  p.payAcountId != #{payAcount.payAcountId,jdbcType=INTEGER}
+  	</if>
+  	<if test="payAcount.agencyId!=null and payAcount.agencyId!=''">
+  	and  p.agencyId = #{payAcount.agencyId,jdbcType=INTEGER}
+  	</if>
+  </select>
+</mapper>

@@ -1,0 +1,135 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:aop="http://www.springframework.org/schema/aop"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.3.xsd
+                           http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-4.3.xsd
+">
+
+
+    <!-- 会话Session ID生成器 -->
+    <bean id="sessionIdGenerator" class="org.apache.shiro.session.mgt.eis.JavaUuidSessionIdGenerator"/>
+
+    <!-- 会话Cookie模板 -->
+    <bean id="sessionIdCookie" class="org.apache.shiro.web.servlet.SimpleCookie">
+        <!--cookie的name -->
+        <constructor-arg value="shiroCookie"/>
+        <property name="httpOnly" value="true"/>
+        <!--cookie的有效时间 -->
+        <property name="maxAge" value="1800"/>
+        <!-- 配置存储Session Cookie的domain为 一级域名
+        <property name="domain" value=""/>
+         -->
+    </bean>
+
+    <!-- 用户信息记住我功能的相关配置 -->
+    <bean id="rememberMeCookie" class="org.apache.shiro.web.servlet.SimpleCookie">
+        <constructor-arg value="rememberMe"/>
+        <property name="httpOnly" value="true"/>
+        <!-- 配置存储rememberMe Cookie的domain为 一级域名
+        <property name="domain" value=".itboy.net"/>
+         -->
+        <property name="maxAge" value="2592000"/><!-- 30天时间，记住我30天 -->
+    </bean>
+
+    <!-- shiro缓存 -->
+
+
+
+
+
+
+    <!-- 配置SecurityManager -->
+    <bean id="securityManager" class="org.apache.shiro.web.mgt.DefaultWebSecurityManager">
+        <!-- <property name="authenticator" ref="authenticator"></property> -->
+        <!-- 可以配置多个Realm，其实会把realms属性赋值给ModularRealmAuthenticator的realms属性 -->
+       <!--  <property name="realms">
+            <list>
+                <ref bean="userRealm" />
+                <ref bean="adminRealm"/>
+            </list>
+        </property> -->
+        <property name="realm" ref="userRealm" /> 
+    </bean>
+
+    <!-- 配置使用自定义认证器，可以实现多Realm认证，并且可以指定特定Realm处理特定类型的验证 -->
+   <!--  <bean id="authenticator" class="com.ucpai.dreamcollection.backend.shiro.authc.pam.CustomizedModularRealmAuthenticator">
+        配置认证策略，只要有一个Realm认证成功即可，并且返回所有认证成功信息
+        <property name="authenticationStrategy">
+            <bean class="org.apache.shiro.authc.pam.AtLeastOneSuccessfulStrategy"></bean>
+        </property>
+    </bean> -->
+
+    <!-- 配置Realm -->
+    <bean id="userRealm" class="com.yootii.bdy.shiro.UserRealm">
+        <!-- 配置密码匹配器 -->
+<!--        <property name="credentialsMatcher">
+            <bean class="org.apache.shiro.authc.credential.HashedCredentialsMatcher">
+                &lt;!&ndash; 加密算法为MD5 &ndash;&gt;
+                <property name="hashAlgorithmName" value="MD5"></property>
+                &lt;!&ndash; 加密次数 &ndash;&gt;
+                <property name="hashIterations" value="1024"></property>
+            </bean>
+        </property>-->
+    </bean>
+
+   <!--  <bean id="adminRealm" class="com.ucpai.dreamcollection.backend.shiro.realm.AdminRealm"> -->
+        <!-- 配置密码匹配器 -->
+<!--        <property name="credentialsMatcher">
+            <bean class="org.apache.shiro.authc.credential.HashedCredentialsMatcher">
+                &lt;!&ndash; 加密算法为MD5 &ndash;&gt;
+                <property name="hashAlgorithmName" value="MD5"></property>
+                &lt;!&ndash; 加密次数 &ndash;&gt;
+                <property name="hashIterations" value="1024"></property>
+            </bean>
+        </property>-->
+<!--     </bean> -->
+
+    <!-- web.xml中shiro的filter对应的bean -->
+    <!-- Shiro 的Web过滤器 -->
+    <bean id="shiroFilter" class="org.apache.shiro.spring.web.ShiroFilterFactoryBean">
+        <property name="securityManager" ref="securityManager"/>
+
+        <property name="loginUrl" value=""/>
+        <!-- 通过unauthorizedUrl指定没有权限操作时跳转页面 -->
+        <property name="unauthorizedUrl" value="user_admin/file"/>
+
+        <!-- 过虑器链定义，从上向下顺序执行，一般将/**放在最下边 -->
+        <property name="filterChainDefinitions">
+            <value>
+         <!--        对静态资源设置匿名访问 -->
+               <!--  /css/** = anon
+                /js/** = anon
+                /Angular/** = anon
+                /font-awesome/** = anon
+                /fonts/** = anon
+                /img/** = anon -->
+              <!--   验证，可匿名访问 -->
+
+               <!--  /index.html = anon
+                /index.jsp = anon
+                /msg/** = anon
+                /login.jsp = anon
+                /admin/login = anon
+                /wx/** = anon
+                /scan/** = anon
+                /smartBoxWebSocketHandler = anon
+                /websocket.html = anon -->
+           <!--      注册 ，登录
+                用户退出
+                不允许所有的可以匿名访问 -->
+                <!--  /** = authc -->
+            </value>
+        </property> 
+    </bean>
+
+    <bean id="lifecycleBeanPostProcessor" class="org.apache.shiro.spring.LifecycleBeanPostProcessor"/>
+
+    <bean class="org.springframework.aop.framework.autoproxy.DefaultAdvisorAutoProxyCreator"
+          depends-on="lifecycleBeanPostProcessor"/>
+
+    <bean class="org.apache.shiro.spring.security.interceptor.AuthorizationAttributeSourceAdvisor">
+        <property name="securityManager" ref="securityManager"/>
+    </bean>
+
+</beans>

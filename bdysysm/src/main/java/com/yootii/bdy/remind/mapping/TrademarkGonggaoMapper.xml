@@ -1,0 +1,232 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.yootii.bdy.remind.dao.TrademarkGonggaoMapper" >
+  <resultMap id="BaseResultMap" type="com.yootii.bdy.remind.model.TrademarkGonggao" >
+    <id column="id" jdbcType="INTEGER" property="id" />
+    <result column="regNumber" jdbcType="VARCHAR" property="regNumber" />
+    <result column="tmName" jdbcType="VARCHAR" property="tmName" />
+    <result column="tmType" jdbcType="VARCHAR" property="tmType" />
+    <result column="ggName" jdbcType="VARCHAR" property="ggName" />
+    <result column="ggDate" jdbcType="TIMESTAMP"  property="ggDate" />
+    <result column="ggNo" jdbcType="VARCHAR" property="ggNo" />
+    <result column="appName" jdbcType="VARCHAR" property="appName" />
+    <result column="status" jdbcType="VARCHAR" property="status" />
+    <result column="agent" jdbcType="VARCHAR" property="agent" />
+    <result column="ggQihao" jdbcType="INTEGER" property="ggQihao" />
+    <result column="ggPage" jdbcType="INTEGER" property="ggPage" />
+    <result column="ggType" jdbcType="VARCHAR" property="ggType" />
+    <result column="tixing" jdbcType="INTEGER" property="tixing" />
+    <result column="ggFaWenDate" jdbcType="TIMESTAMP"  property="ggFaWenDate" />
+    <result column="ggFileUrl" jdbcType="VARCHAR" property="ggFileUrl" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    id, regNumber, tmName, tmType, ggName,  ggDate, ggNo, appName, status, agent, ggQihao, 
+    ggPage, ggType, tixing,ggFaWenDate, ggFileUrl
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select 
+    <include refid="Base_Column_List" />
+    from trademark_gonggao
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+  
+    <select id="selectByTrademarkSongdagg" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from trademark_gonggao
+    where appName in (select applicantName from applicant a
+		join customer_applicant ca on a.id=ca.appId
+		left join  agency_customer ac on ca.custId=ac.custId
+		where
+		<bind name="agencyId" value="agencyId" />
+		<if test="agencyId != null" >
+			ac.agencyId = #{agencyId,jdbcType=INTEGER}
+      	</if>
+		<bind name="custId" value="custId" />
+      	<if test="custId != null" >
+  		    ca.custId = #{custId,jdbcType=INTEGER}
+      	</if>
+      ) and ifnull(ggType,"") != "商标初步审定公告"
+	<bind name="gcon.offset" value="gcon.offset" />
+	<bind name="gcon.rows" value="gcon.rows" />
+	<if test="gcon.rows != null and gcon.offset != null" >
+	limit #{gcon.offset,jdbcType=INTEGER}, #{gcon.rows,jdbcType=INTEGER}
+	</if>
+  </select>
+  
+  
+  <select id="selectcountByTrademarkSongdagg" resultType="java.lang.Integer" >
+    select count(1)
+    from trademark_gonggao
+    where appName in (select applicantName from applicant a
+		join customer_applicant ca on a.id=ca.appId
+		left join  agency_customer ac on ca.custId=ac.custId
+		where
+		<if test="agencyId != null" >
+			ac.agencyId = #{agencyId,jdbcType=INTEGER}
+      	</if>
+      	<if test="custId != null" >
+  		    ca.custId = #{custId,jdbcType=INTEGER}
+      	</if>
+      ) and ifnull(ggType,"") != "商标初步审定公告"
+  </select>
+ 
+   <select id="selectByTrademarkChushengg" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from trademark_gonggao
+    where appName in (select applicantName from applicant a
+		join customer_applicant ca on a.id=ca.appId
+		left join  agency_customer ac on ca.custId=ac.custId
+		where
+		<bind name="agencyId" value="agencyId" />
+		<if test="agencyId != null" >
+			ac.agencyId = #{agencyId,jdbcType=INTEGER}
+      	</if>
+		<bind name="custId" value="custId" />
+      	<if test="custId != null" >
+  		    ca.custId = #{custId,jdbcType=INTEGER}
+      	</if>
+      ) and ifnull(ggType,"") = "商标初步审定公告"
+	<bind name="gcon.offset" value="gcon.offset" />
+	<bind name="gcon.rows" value="gcon.rows" />
+	<if test="gcon.rows != null and gcon.offset != null" >
+	limit #{gcon.offset,jdbcType=INTEGER}, #{gcon.rows,jdbcType=INTEGER}
+	</if>
+  </select>
+  
+  
+  <select id="selectcountByTrademarkChushengg" resultType="java.lang.Integer" >
+    select count(1)
+    from trademark_gonggao
+    where appName in (select applicantName from applicant a
+		join customer_applicant ca on a.id=ca.appId
+		left join  agency_customer ac on ca.custId=ac.custId
+		where
+		<if test="agencyId != null" >
+			ac.agencyId = #{agencyId,jdbcType=INTEGER}
+      	</if>
+      	<if test="custId != null" >
+  		    ca.custId = #{custId,jdbcType=INTEGER}
+      	</if>
+      ) and ifnull(ggType,"") = "商标初步审定公告"
+  </select>
+  
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
+    delete from trademark_gonggao
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.yootii.bdy.remind.model.TrademarkGonggao" >
+    insert into trademark_gonggao (id, custId, regNumber, 
+      ggName, ggDate, ggQihao, 
+      ggPage, vcode, tmId
+      )
+    values (#{id,jdbcType=INTEGER}, #{custId,jdbcType=INTEGER}, #{regNumber,jdbcType=VARCHAR}, 
+      #{ggName,jdbcType=VARCHAR}, #{ggDate,jdbcType=TIMESTAMP}, #{ggQihao,jdbcType=VARCHAR}, 
+      #{ggPage,jdbcType=VARCHAR}, #{vcode,jdbcType=VARCHAR}, #{tmId,jdbcType=INTEGER}
+      )
+  </insert>
+  <insert id="insertSelective" parameterType="com.yootii.bdy.remind.model.TrademarkGonggao" useGeneratedKeys="true" keyProperty="id">
+    insert into trademark_gonggao
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        id,
+      </if>
+      <if test="custId != null" >
+        custId,
+      </if>
+      <if test="regNumber != null" >
+        regNumber,
+      </if>
+      <if test="ggName != null" >
+        ggName,
+      </if>
+      <if test="ggDate != null" >
+        ggDate,
+      </if>
+      <if test="ggQihao != null" >
+        ggQihao,
+      </if>
+      <if test="ggPage != null" >
+        ggPage,
+      </if>
+      <if test="vcode != null" >
+        vcode,
+      </if>
+      <if test="tmId != null" >
+        tmId,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        #{id,jdbcType=INTEGER},
+      </if>
+      <if test="custId != null" >
+        #{custId,jdbcType=INTEGER},
+      </if>
+      <if test="regNumber != null" >
+        #{regNumber,jdbcType=VARCHAR},
+      </if>
+      <if test="ggName != null" >
+        #{ggName,jdbcType=VARCHAR},
+      </if>
+      <if test="ggDate != null" >
+        #{ggDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="ggQihao != null" >
+        #{ggQihao,jdbcType=VARCHAR},
+      </if>
+      <if test="ggPage != null" >
+        #{ggPage,jdbcType=VARCHAR},
+      </if>
+      <if test="vcode != null" >
+        #{vcode,jdbcType=VARCHAR},
+      </if>
+      <if test="tmId != null" >
+        #{tmId,jdbcType=INTEGER},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.yootii.bdy.remind.model.TrademarkGonggao" >
+    update trademark_gonggao
+    <set >
+      <if test="custId != null" >
+        custId = #{custId,jdbcType=INTEGER},
+      </if>
+      <if test="regNumber != null" >
+        regNumber = #{regNumber,jdbcType=VARCHAR},
+      </if>
+      <if test="ggName != null" >
+        ggName = #{ggName,jdbcType=VARCHAR},
+      </if>
+      <if test="ggDate != null" >
+        ggDate = #{ggDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="ggQihao != null" >
+        ggQihao = #{ggQihao,jdbcType=VARCHAR},
+      </if>
+      <if test="ggPage != null" >
+        ggPage = #{ggPage,jdbcType=VARCHAR},
+      </if>
+      <if test="vcode != null" >
+        vcode = #{vcode,jdbcType=VARCHAR},
+      </if>
+      <if test="tmId != null" >
+        tmId = #{tmId,jdbcType=INTEGER},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.yootii.bdy.remind.model.TrademarkGonggao" >
+    update trademark_gonggao
+    set custId = #{custId,jdbcType=INTEGER},
+      regNumber = #{regNumber,jdbcType=VARCHAR},
+      ggName = #{ggName,jdbcType=VARCHAR},
+      ggDate = #{ggDate,jdbcType=TIMESTAMP},
+      ggQihao = #{ggQihao,jdbcType=VARCHAR},
+      ggPage = #{ggPage,jdbcType=VARCHAR},
+      vcode = #{vcode,jdbcType=VARCHAR},
+      tmId = #{tmId,jdbcType=INTEGER}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+</mapper>
